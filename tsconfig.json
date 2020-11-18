@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["esnext", "dom"],
+    "jsx": "react",
+    "strict": true,
+    "noImplicitThis": false,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "declaration": true,
+    "typeRoots": ["node_modules/@types", "src/types"],
+    "moduleResolution": "node",
+    "outDir": "lib",
+    "module": "es2015"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "lib", "scripts", "test"]
+}

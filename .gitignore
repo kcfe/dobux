@@ -1,0 +1,23 @@
+# systems
+.DS_Store
+.idea/
+
+# temps
+*.log
+*.cache
+*.diff
+*.patch
+*.tmp
+
+# coverages
+coverage/
+*.lcov
+
+# dependencies
+node_modules/
+
+# customers
+cjs/
+esm/
+umd/
+lib/

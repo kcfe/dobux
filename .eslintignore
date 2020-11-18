@@ -1,0 +1,6 @@
+# javascripts
+lib/
+scripts/
+
+# tests
+test/

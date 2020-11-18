@@ -1,0 +1,18 @@
+language: node_js
+node_js:
+  - '12'
+cache: npm
+env:
+  - CI=true
+script:
+  - npm run test:once
+  - npm run docs:build
+after_success:
+  - npm run coverage
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $github_token
+  local_dir: docs/.vuepress/dist/
+  on:
+    branch: main
