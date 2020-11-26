@@ -79,7 +79,7 @@ async function publishToNpm(nextVersion) {
 }
 
 async function githubRelease(tag, body, isPrerelease) {
-  const repoUrl = repository ? repository.url : 'https://github.com/kwai-ad-fe/dobux'
+  const repoUrl = repository ? repository.url : 'https://github.com/kwai-efe/dobux'
   const url = newGithubReleaseUrl({
     repoUrl,
     tag,

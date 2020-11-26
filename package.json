@@ -33,7 +33,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kwai-ad-fe/dobux"
+    "url": "https://github.com/kwai-efe/dobux"
   },
   "keywords": [
     "react",
@@ -67,6 +67,9 @@
         "src/**/*"
       ]
     }
+  },
+  "dependencies": {
+    "immer": "^6.0.9"
   },
   "peerDependencies": {
     "react": "^16.8.0",
