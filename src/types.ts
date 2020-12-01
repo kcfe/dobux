@@ -163,9 +163,8 @@ export type HOC<InjectProps = any> = <P>(
 export type Optionality<T extends K, K> = Omit<T, keyof K>
 
 export interface Subscriber<T> {
-  mapStateToProps: any
+  mapStateToProps: MapStateToProps<any>
   prevState: T
-  effects: any
   dispatcher: Dispatch<any>
 }
 

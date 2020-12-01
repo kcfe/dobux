@@ -12,6 +12,6 @@ interface ModelOptions<C extends ModelConfig> {
 
 export class Model<C extends ModelConfig> {
   constructor(private options: ModelOptions<C>) {
-
+    
   }
 }
