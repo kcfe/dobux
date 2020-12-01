@@ -136,10 +136,7 @@ export interface ModelProviderOptions {
 
 export interface ModelContextProps {
   model: ContextPropsModel
-  options: ModelProviderOptions
 }
-
-export type ModelProvider = React.FC<React.PropsWithChildren<ModelProviderOptions>>
 
 export interface StoreProviderOptions<C extends Configs> {
   autoReset?: boolean | UnionToTuple<keyof C>

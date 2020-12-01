@@ -1,5 +1,5 @@
 import { Store } from './core/Store'
-import { defaultOptions } from './defaultOptions'
+import { defaultOptions } from './default'
 
 import { Models, Configs, ConfigReducers, ConfigEffects, Noop, StoreOptions } from './types'
 import { getStoreName } from './utils/func'
