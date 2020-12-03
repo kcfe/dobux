@@ -2,7 +2,7 @@ import { shallowEqual } from '../utils/shallowEqual'
 import { Subscriber } from '../types'
 
 export class Container<T> {
-  private subscribers: Subscriber<T>[] = []
+  public subscribers: Subscriber<T>[] = []
 
   notify(payload?: T): void {
     for (let i = 0; i < this.subscribers.length; i++) {
