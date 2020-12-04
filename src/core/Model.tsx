@@ -146,7 +146,7 @@ export class Model<C extends ModelConfig> {
       reducers.setValues = (partialState): void => {
         const newState = this.produceState(this.model.state, draft => {
           Object.keys(partialState).forEach(key => {
-            draft[key] = Object.assign(draft[key], partialState[key])
+            draft[key] = partialState[key]
           })
         })
 

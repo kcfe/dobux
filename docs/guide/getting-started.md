@@ -1,3 +1,7 @@
+---
+order: 2
+---
+
 # 快速上手
 
 <Alert>Tips: 请确保你的 React 版本 >= 16.8.0</Alert>
@@ -20,32 +24,30 @@ $ yarn add dobux
   - model.ts
 ```
 
+[点击查看完成示例](/guide/examples#简单的计数器)
+
 ## 定义模型
 
 一个 `Dobux` 模型（model）由三个部分组成，它们分别是 `state`，`reducers` 以及 `effects`，其中 `state` 保存了当前模型的状态，`reducers` 是用户改变 `state` 的唯一方式，`effects` 用于处理副作用
 
 ```ts
 // model.ts
-import { createModel } from '@dobux/store'
-import { ModelsType } from './index'
+import { createModel } from 'dobux'
+import { RootModel } from './index'
 
-const state = {
-  count: 0,
-}
-
-type State = typeof state
-
-export const counter = createModel<ModelsType, 'counter'>()({
-  state,
+export const counter = createModel<RootModel, 'counter'>()({
+  state: {
+    count: 0,
+  },
   reducers: {
-    increase(state: State) {
+    increase(state) {
       state.count += 1
     },
-    decrease(state: State) {
+    decrease(state) {
       state.count -= 1
     },
   },
-  effects: (store: ModelsType['counter'], Models: ModelsType) => ({
+  effects: (store, rootModel) => ({
     async increaseAsync() {
       await wait(2000)
       store.reducers.increase()
@@ -56,15 +58,15 @@ export const counter = createModel<ModelsType, 'counter'>()({
 
 ## 消费模型
 
-通过构造函数 `createStore` 传入自定义的模型会创建一个 `Store` 的实例，该实例上包含了模型的承载组件 `withProvider（Provider）`，以及 **hook style** 的 API `useModel`，在函数组件内部可以通过模型的唯一名称获取指定的 `model` 进行消费
+调用函数 `createStore` 传入自定义的模型会创建一个 `Store` 的实例，该实例上包含了模型的承载组件 `withProvider（Provider）`，以及 **hook style** 的 API `useModel`，在函数组件内部可以通过模型的唯一名称获取指定的 `model` 进行消费
 
 ```tsx | pure
 // index.tsx
 import React from 'react'
-import { createStore, Models } from '@dobux/store'
+import { createStore, Models } from 'dobux'
 import * as models from './model'
 
-export type ModelsType = Models<typeof models>
+export type RootModel = Models<typeof models>
 
 // 创建 store 实例
 const { withProvider, useModel } = createStore(models)
@@ -80,25 +82,11 @@ const Counter: React.FC = () => {
     reducers.decrease()
   }
 
-  const handleSetValue = () => {
-    reducers.setValue('count', 10)
-  }
-
-  const handleAsync = () => {
-    effects.increaseAsync()
-  }
-
-  if (effects.increaseAsync.loading) {
-    return <p className="loading">loading ...</p>
-  }
-
   return (
     <div className="counter">
       <p>The count is: {state.count}</p>
       <button onClick={handleIncrease}>+</button>
-      <button onClick={handleDecrease}>-</button>
-      <button onClick={handleSetValue}>setValue</button>
-      <button onClick={handleAsync}>async</button>
+      <button onClick={handleDecrease}>-</button
     </div>
   )
 }
@@ -107,6 +95,4 @@ const Counter: React.FC = () => {
 export default withProvider(Counter)
 ```
 
-> 注：在 `index.tsx` 中导出 `ModelsType` 仅仅是为了 ts 类型推断，[详见](/guide/faq.html#实例化-store-时为什么要对-model-进行循环引用？)
-
-![](/counter.gif)
+> 注：在 `index.tsx` 中导出 `RootModel` 类型仅仅是为了 ts 类型约束的类型推断，[详见](/guide/faq.html#实例化-store-时为什么要对-model-进行循环引用？)

@@ -17,6 +17,7 @@ coverage/
 node_modules/
 
 # customers
+dist/
 cjs/
 esm/
 umd/

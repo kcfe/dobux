@@ -1,5 +1,5 @@
 ---
-sidebarDepth: 2
+order: 1
 ---
 
 # 介绍
@@ -18,7 +18,7 @@ sidebarDepth: 2
 数据的改变发生通常是通过用户交互行为触发的，当此类行为会改变数据的时候可以直接调用 `Reducers` 改变 State ，如果需要执行副作用（比如异步请求）则需要先调用 `Effects`，执行完副作用后再调用 `Reducers` 改变 `State`
 
 <div style="text-align: center">
-  <img width="100%" src="/dobux-flow.png" />
+  <img width="800px" src="/dobux-flow.png" />
 </div>
 
 ## 核心概念
@@ -75,14 +75,14 @@ const counter = createModel()({
 `Dobux` 内置了名为 `setValue`、`setValues` 和 `reset` 的 `Reducer`，可以简化状态修改逻辑
 
 ```ts
-// modify specify state
+// modify state specially
 reducers.setValue('count', 10)
-// batch modify specify state
+// batched modify state
 reducers.setValues({
   count: 10,
 })
 
-// reset total state
+// reset whole state
 reducers.reset()
 // reset partial state
 reducers.reset('count')
@@ -99,7 +99,7 @@ reducers.reset('count')
 `Dobux` 内置了异步操作 `loading` 态处理，可以简化视图逻辑处理
 
 ```ts
-import { createModel } from 'Dobux'
+import { createModel } from 'dobux'
 
 const counter = createModel()({
   state: {
@@ -110,10 +110,10 @@ const counter = createModel()({
       state.count += 1
     },
   },
-  effects: (store, Models) => ({
+  effects: (model, rootModel) => ({
     async increaseAsync() {
       await wait(2000)
-      store.reducers.increase()
+      model.reducers.increase()
     },
   }),
 })

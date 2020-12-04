@@ -17,7 +17,7 @@ features:
   - icon: https://static.yximgs.com/udata/pkg/ks-ad-fe/kcfe/dobux-feature-ts.png
     title: TypeScript 支持
     desc: 提供完整的 TypeScript 类型定义，在编辑器中能获得完整的类型检查和类型推断
-footer: Open-source MIT Licensed | Copyright © 2019-present<br />Powered by [kcfe](https://github.com/kcfe)
+footer: Open-source MIT Licensed | Copyright © 2020-present<br />Powered by [KCFe](https://github.com/kcfe)
 ---
 
 ## 轻松上手

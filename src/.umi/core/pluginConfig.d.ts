@@ -5,69 +5,69 @@ export interface IConfigFromPlugins {
     /**
      * Any valid URL path
      */
-    path?: string;
+    path?: string
     /**
      * A React component to render only when the location matches.
      */
-    component?: string | (() => any);
-    wrappers?: string[];
+    component?: string | (() => any)
+    wrappers?: string[]
     /**
      * navigate to a new location
      */
-    redirect?: string;
+    redirect?: string
     /**
      * When true, the active class/style will only be applied if the location is matched exactly.
      */
-    exact?: boolean;
-    routes?: any[];
-    [k: string]: any;
-  }[];
+    exact?: boolean
+    routes?: any[]
+    [k: string]: any
+  }[]
   history?: {
-    type?: "browser" | "hash" | "memory";
-    options?: {};
-  };
+    type?: 'browser' | 'hash' | 'memory'
+    options?: {}
+  }
   polyfill?: {
-    imports?: string[];
-  };
-  alias?: {};
+    imports?: string[]
+  }
+  alias?: {}
   analyze?: {
-    analyzerMode?: "server" | "static" | "disabled";
-    analyzerHost?: string;
-    analyzerPort?: any;
-    openAnalyzer?: boolean;
-    generateStatsFile?: boolean;
-    statsFilename?: string;
-    logLevel?: "info" | "warn" | "error" | "silent";
-    defaultSizes?: "stat" | "parsed" | "gzip";
-    [k: string]: any;
-  };
+    analyzerMode?: 'server' | 'static' | 'disabled'
+    analyzerHost?: string
+    analyzerPort?: any
+    openAnalyzer?: boolean
+    generateStatsFile?: boolean
+    statsFilename?: string
+    logLevel?: 'info' | 'warn' | 'error' | 'silent'
+    defaultSizes?: 'stat' | 'parsed' | 'gzip'
+    [k: string]: any
+  }
   /**
    * postcss autoprefixer, default flexbox: no-2009
    */
-  autoprefixer?: {};
-  base?: string;
-  chainWebpack?: () => any;
-  chunks?: string[];
+  autoprefixer?: {}
+  base?: string
+  chainWebpack?: () => any
+  chunks?: string[]
   /**
    * more css-loader options see https://webpack.js.org/loaders/css-loader/#options
    */
   cssLoader?: {
-    url?: boolean | (() => any);
-    import?: boolean | (() => any);
-    modules?: boolean | string | {};
-    sourceMap?: boolean;
-    importLoaders?: number;
-    onlyLocals?: boolean;
-    esModule?: boolean;
-    localsConvention?: "asIs" | "camelCase" | "camelCaseOnly" | "dashes" | "dashesOnly";
-  };
+    url?: boolean | (() => any)
+    import?: boolean | (() => any)
+    modules?: boolean | string | {}
+    sourceMap?: boolean
+    importLoaders?: number
+    onlyLocals?: boolean
+    esModule?: boolean
+    localsConvention?: 'asIs' | 'camelCase' | 'camelCaseOnly' | 'dashes' | 'dashesOnly'
+  }
   cssModulesTypescriptLoader?: {
-    mode?: "emit" | "verify";
-  };
-  cssnano?: {};
-  copy?: any[];
-  define?: {};
-  devScripts?: {};
+    mode?: 'emit' | 'verify'
+  }
+  cssnano?: {}
+  copy?: any[]
+  define?: {}
+  devScripts?: {}
   /**
    * devServer configs
    */
@@ -75,20 +75,20 @@ export interface IConfigFromPlugins {
     /**
      * devServer port, default 8000
      */
-    port?: number;
-    host?: string;
+    port?: number
+    host?: string
     https?:
       | {
-          key?: string;
-          cert?: string;
-          [k: string]: any;
+          key?: string
+          cert?: string
+          [k: string]: any
         }
-      | boolean;
-    headers?: {};
-    writeToDisk?: boolean | (() => any);
-    [k: string]: any;
-  };
-  devtool?: string;
+      | boolean
+    headers?: {}
+    writeToDisk?: boolean | (() => any)
+    [k: string]: any
+  }
+  devtool?: string
   /**
    * Code splitting for performance optimization
    */
@@ -96,101 +96,107 @@ export interface IConfigFromPlugins {
     /**
      * loading the component before loaded
      */
-    loading?: string;
-  };
+    loading?: string
+  }
   exportStatic?: {
-    htmlSuffix?: boolean;
-    dynamicRoot?: boolean;
+    htmlSuffix?: boolean
+    dynamicRoot?: boolean
     /**
      * extra render paths only enable in ssr
      */
-    extraRoutePaths?: () => any;
-  };
-  externals?: {} | string | (() => any);
-  extraBabelPlugins?: any[];
-  extraBabelPresets?: any[];
-  extraPostCSSPlugins?: any[];
+    extraRoutePaths?: () => any
+  }
+  externals?: {} | string | (() => any)
+  extraBabelPlugins?: any[]
+  extraBabelPresets?: any[]
+  extraPostCSSPlugins?: any[]
   /**
    * fork-ts-checker-webpack-plugin options see https://github.com/TypeStrong/fork-ts-checker-webpack-plugin#options
    */
   forkTSChecker?: {
-    async?: boolean;
-    typescript?: boolean | {};
-    eslint?: {};
-    issue?: {};
-    formatter?: string | {};
-    logger?: {};
-    [k: string]: any;
-  };
-  hash?: boolean;
-  ignoreMomentLocale?: boolean;
-  inlineLimit?: number;
-  lessLoader?: {};
+    async?: boolean
+    typescript?: boolean | {}
+    eslint?: {}
+    issue?: {}
+    formatter?: string | {}
+    logger?: {}
+    [k: string]: any
+  }
+  fastRefresh?: {}
+  hash?: boolean
+  ignoreMomentLocale?: boolean
+  inlineLimit?: number
+  lessLoader?: {}
   manifest?: {
-    fileName?: string;
-    publicPath?: "";
-    basePath?: string;
-    writeToFileEmit?: boolean;
-  };
-  mountElementId?: "";
-  mpa?: {};
+    fileName?: string
+    publicPath?: ''
+    basePath?: string
+    writeToFileEmit?: boolean
+  }
+  mountElementId?: ''
+  mpa?: {}
   nodeModulesTransform?: {
-    type?: "all" | "none";
-    exclude?: string[];
-  };
-  outputPath?: "";
-  plugins?: string[];
-  postcssLoader?: {};
-  presets?: string[];
-  proxy?: {};
-  publicPath?: string;
-  runtimePublicPath?: boolean;
+    type?: 'all' | 'none'
+    exclude?: string[]
+  }
+  outputPath?: ''
+  plugins?: string[]
+  postcssLoader?: {}
+  presets?: string[]
+  proxy?: {}
+  publicPath?: string
+  runtimePublicPath?: boolean
   ssr?: {
     /**
      * force execing Page getInitialProps functions
      */
-    forceInitial?: boolean;
+    forceInitial?: boolean
     /**
      * remove window.g_initialProps in html
      */
-    removeWindowInitialProps?: boolean;
+    removeWindowInitialProps?: boolean
     /**
      * disable serve-side render in umi dev mode.
      */
-    devServerRender?: boolean;
-    mode?: "stream" | "string";
+    devServerRender?: boolean
+    mode?: 'stream' | 'string'
     /**
      * static markup in static site
      */
-    staticMarkup?: boolean;
-  };
-  singular?: boolean;
-  styleLoader?: {};
-  targets?: {};
-  terserOptions?: {};
-  theme?: {};
-  runtimeHistory?: {};
-  favicon?: string;
-  headScripts?: any[];
-  links?: any[];
-  metas?: any[];
-  scripts?: any[];
-  styles?: any[];
-  title?: string;
+    staticMarkup?: boolean
+  }
+  singular?: boolean
+  styleLoader?: {}
+  targets?: {}
+  terserOptions?: {}
+  theme?: {}
+  runtimeHistory?: {}
+  favicon?: string
+  headScripts?: any[]
+  links?: any[]
+  metas?: any[]
+  scripts?: any[]
+  styles?: any[]
+  title?: string
   mock?: {
-    exclude?: string[];
-  };
-  description?: string;
-  logo?: string;
-  locales?: any[];
-  mode?: string;
-  menus?: {};
-  navs?: any[] | {};
-  resolve?: {};
+    exclude?: string[]
+  }
+  themeConfig?: {}
+  logo?: string | boolean
+  mode?: any
+  description?: string
+  locales?: string[][]
+  resolve?: {}
+  menus?: {}
+  navs?: any[] | {}
   algolia?: {
-    apiKey?: string;
-    indexName?: string;
-    debug?: boolean;
-  };
-  [k: string]: any;
+    apiKey?: string
+    indexName?: string
+    debug?: boolean
+  }
+  sitemap?: {
+    hostname?: string
+    excludes?: string[]
+  }
+  [k: string]: any
 }

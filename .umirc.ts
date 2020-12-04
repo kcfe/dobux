@@ -1,4 +1,7 @@
 export default {
+  base: '/dobux',
+  publicPath: '/dobux/',
+  locales: [['zh-CN', '中文'], ['en-US', 'English']],
   exportStatic: {},
   nodeModulesTransform: {
     type: 'none',
@@ -21,5 +24,4 @@ export default {
     { title: 'GitHub', path: 'https://github.com/kcfe/dobux' },
     { title: '更新日志', path: 'https://github.com/kcfe/dobux/releases' },
   ],
-  headScripts: ['https://s4.cnzz.com/z_stat.php?id=1278992092&web_id=1278992092'],
 };
