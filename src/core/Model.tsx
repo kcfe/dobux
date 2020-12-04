@@ -1,10 +1,19 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, Dispatch } from 'react'
 import produce from 'immer'
-import { ConfigReducer, ContextPropsModel, MapStateToProps, ModelConfig, ModelContextProps, ModelEffect, Subscriber } from '../types'
+import { 
+  ConfigReducer, 
+  ContextPropsModel, 
+  MapStateToProps, 
+  ModelConfig, 
+  ModelConfigEffect, 
+  ModelContextProps, 
+  StateSubscriber 
+} from '../types'
 import { invariant } from '../utils/invariant'
 import { isObject } from '../utils/type'
 import { createProvider } from './createProvider'
 import { Container } from './Container'
+import { noop } from '../utils/func'
 
 interface ModelOptions<C extends ModelConfig> {
   storeName: string
@@ -20,7 +29,11 @@ export class Model<C extends ModelConfig> {
 
   private model: ContextPropsModel<C>
   private initialState: C['state']
+
   private container: Container<C['state']>
+  private currentDispatcher: Dispatch<any> = noop
+  private isInternalUpdate = false
+
   private useContext: () => ModelContextProps
   
   constructor(private options: ModelOptions<C>) {
@@ -40,12 +53,13 @@ export class Model<C extends ModelConfig> {
 
   public useModel(mapStateToProps: MapStateToProps<C['state']>): any {
     const [, dispatcher] = useState()
-    const { subscribers } = this.container
     const { model } = this.useContext()
 
-    const subscriberRef = useRef<Subscriber<C['state']>>()
+    this.currentDispatcher = dispatcher
 
-    // 组件初始化时注册监听函数，使用 useRef 保证每个组件只注册一次
+    const subscriberRef = useRef<StateSubscriber<C['state']>>()
+
+    // make sure only subscribe once
     if (!subscriberRef.current) {
       const subscriber = {
         dispatcher,
@@ -54,15 +68,14 @@ export class Model<C extends ModelConfig> {
       }
 
       subscriberRef.current = subscriber
-      subscribers.push(subscriber)
+      this.container.subscribe('state', subscriber)
     }
 
-    /* eslint-disable-next-line */
     useEffect(() => {
       return (): void => {
-        // 组件卸载时解绑监听函数
-        const index = subscribers.indexOf(subscriberRef.current!)
-        subscribers.splice(index, 1)
+        // unsubscribe when component unmount
+        this.container.unsubscribe('state', subscriberRef.current as StateSubscriber<C['state']>)
+        this.container.unsubscribe('effect', dispatcher)
       }
     }, [])
 
@@ -116,7 +129,7 @@ export class Model<C extends ModelConfig> {
       Object.create(null)
     )
 
-    // 如果用户没有定义 setValue 则内置该方法
+    // internal reducer setValue
     if (!reducers.setValue) {
       reducers.setValue = (key, value): void => {
         const newState = this.produceState(this.model.state, draft => {
@@ -128,7 +141,7 @@ export class Model<C extends ModelConfig> {
       }
     }
 
-    // 如果用户没有定义 setValues 则内置该方法
+    // internal reducer setValues
     if (!reducers.setValues) {
       reducers.setValues = (partialState): void => {
         const newState = this.produceState(this.model.state, draft => {
@@ -143,7 +156,7 @@ export class Model<C extends ModelConfig> {
       }
     }
 
-    // 如果用户没有定义 reset 则内置该方法
+    // internal reducer reset
     if (!reducers.reset) {
       reducers.reset = (key): void => {
         const newState = this.produceState(this.model.state, draft => {
@@ -168,12 +181,13 @@ export class Model<C extends ModelConfig> {
     return Object.keys(config.effects).reduce((effects, name) => {
       const originEffect = config.effects[name]
 
-      const effect: ModelEffect<typeof originEffect> = async (...payload: any): Promise<void> => {
+      const effect: ModelConfigEffect<typeof originEffect> = async (...payload: any): Promise<void> => {
         try {
           effect.identifier++
+          
+          this.isInternalUpdate = true
           effect.loading = true
-
-          this.container.notify(null)
+          this.isInternalUpdate = false
 
           const result = await originEffect(...payload)
           return result
@@ -184,14 +198,37 @@ export class Model<C extends ModelConfig> {
 
           /* istanbul ignore else */
           if (effect.identifier === 0) {
+            this.isInternalUpdate = true
             effect.loading = false
-            this.container.notify(null)
+            this.isInternalUpdate = false
           }
         }
       }
 
       effect.loading = false
       effect.identifier = 0
+
+      let value = false
+      const that = this
+
+      Object.defineProperty(effect, 'loading', {
+        configurable: false,
+        enumerable: true,
+        
+        get() {
+          that.container.subscribe('effect', that.currentDispatcher)
+          return value
+        },
+
+        set(newValue) {
+          // avoid modify effect loading out of internal
+          if(newValue !== value && that.isInternalUpdate) {
+            value = newValue
+            that.container.notify()
+          }
+        }
+      })
+
       effects[name] = effect
 
       return effects

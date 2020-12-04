@@ -63,8 +63,7 @@ export interface Configs {
 }
 
 interface ModelEffectState {
-  loading: boolean
-  identifier: number
+  readonly loading: boolean
 }
 
 interface BuildInReducers<S = any> {
@@ -119,6 +118,13 @@ export interface ModelConfig<S = any> {
   effects: { [key: string]: ConfigEffect }
 }
 
+export type ModelConfigEffect<E extends ConfigEffect> = (E extends (...payload: infer P) => infer R
+  ? (...payload: P) => R
+  : any) & {
+  loading: boolean
+  identifier: number
+}
+
 export interface ContextPropsModel<C extends ModelConfig = any> {
   state: C['state']
   reducers: C['reducers'] extends ConfigReducers<C['state']>
@@ -147,23 +153,19 @@ export type StoreProvider<C extends Configs> = React.FC<
   React.PropsWithChildren<StoreProviderOptions<C>>
 >
 
-export interface StoreOptions<C extends Configs> {
-  name: string
-  autoReset: boolean | UnionToTuple<keyof C>
-  devTools: boolean | UnionToTuple<keyof C>
-}
-
 export type HOC<InjectProps = any> = <P>(
   Component: React.ComponentType<P & InjectProps>
 ) => React.ComponentType<P>
 
 export type Optionality<T extends K, K> = Omit<T, keyof K>
 
-export interface Subscriber<T> {
+export interface StateSubscriber<T> {
   mapStateToProps: MapStateToProps<any>
   prevState: T
   dispatcher: Dispatch<any>
 }
+
+export type EffectSubscriber = Dispatch<any>
 
 export interface MapStateToProps<M extends Model<any>, S = any> {
   (state: M['state']): S
