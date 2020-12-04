@@ -1,24 +1,16 @@
 # 快速上手
 
-::: warning 注意
-请确保你的 React 版本 >= 16.8.0
-:::
+<Alert>Tips: 请确保你的 React 版本 >= 16.8.0</Alert>
 
 ## 安装
 
-- 使用 `yarn`
-
 ```bash
-$ yarn add @dobux/store@alpha
+// 使用 npm
+$ npm i dobux --save
+
+// 使用 yarn
+$ yarn add dobux
 ```
-
-- 使用 `npm`
-
-```bash
-$ npm i @dobux/store@alpha --save
-```
-
-**业务诉求需要多 Model 共享状态？[点击查看多 Model 实践](/guide/best-practice.html#多-model)**
 
 ## 目录结构
 
@@ -66,7 +58,7 @@ export const counter = createModel<ModelsType, 'counter'>()({
 
 通过构造函数 `createStore` 传入自定义的模型会创建一个 `Store` 的实例，该实例上包含了模型的承载组件 `withProvider（Provider）`，以及 **hook style** 的 API `useModel`，在函数组件内部可以通过模型的唯一名称获取指定的 `model` 进行消费
 
-```tsx
+```tsx | pure
 // index.tsx
 import React from 'react'
 import { createStore, Models } from '@dobux/store'

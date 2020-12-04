@@ -4,7 +4,7 @@ sidebarDepth: 2
 
 # 介绍
 
-`@dobux/store`：轻量级的 **响应式** 状态管理方案
+`Dobux`：轻量级的 **响应式** 状态管理方案
 
 ## 特性
 
@@ -25,7 +25,7 @@ sidebarDepth: 2
 
 ### Store
 
-在使用 `@dobux/store` 的应用中允许创建多个 `store` 实例，每个 `store` 实例都会对应一组模型集合，它们之间是相互独立，互不干扰的
+在使用 `Dobux` 的应用中允许创建多个 `store` 实例，每个 `store` 实例都会对应一组模型集合，它们之间是相互独立，互不干扰的
 
 通常在一个单页应用中会创建一个全局的 `store` 来存储一些全局的共享状态，与此同时可以针对每一个页面路由乃至每一个组件创建对应的 `store` 将试图与状态分离进行统一管理
 
@@ -39,8 +39,8 @@ sidebarDepth: 2
 
 `State` 表示当前模型的状态数据，通常表现为一个 JavaScript 对象（当然它可以是任何值）；操作的时候每次都要当作不可变数据（immutable data）来对待，保证每次都是全新对象，没有引用关系，这样才能保证 `State` 的独立性以及依赖的正确性
 
-```tsx
-import { createModel } from '@dobux/store'
+```tsx | pure
+import { createModel } from 'dobux'
 
 const counter = createModel()({
   state: {
@@ -58,7 +58,7 @@ const counter = createModel()({
 在 `Reducer` 中你可以通过简单地修改数据就能更新状态并刷新组件视图，同时生成不可变数据源，保证依赖的正确性
 
 ```ts
-import { createModel } from '@dobux/store'
+import { createModel } from 'dobux'
 
 const counter = createModel()({
   state: {
@@ -72,7 +72,7 @@ const counter = createModel()({
 })
 ```
 
-`@dobux/store` 内置了名为 `setValue`、`setValues` 和 `reset` 的 `Reducer`，可以简化状态修改逻辑
+`Dobux` 内置了名为 `setValue`、`setValues` 和 `reset` 的 `Reducer`，可以简化状态修改逻辑
 
 ```ts
 // modify specify state
@@ -94,12 +94,12 @@ reducers.reset('count')
 
 `Effect` 被称为副作用，在我们的应用中，最常见的就是异步操作。它来自于函数编程的概念，之所以叫副作用是因为它使得我们的函数变得不纯，同样的输入不一定获得同样的输出
 
-在 `@dobux/store` 中所有副作用处理通过调用 `Effect` 进行，通常会在副作用中处理异步请求以及调用其他模型进行通信
+在 `Dobux` 中所有副作用处理通过调用 `Effect` 进行，通常会在副作用中处理异步请求以及调用其他模型进行通信
 
-`@dobux/store` 内置了异步操作 `loading` 态处理，可以简化视图逻辑处理
+`Dobux` 内置了异步操作 `loading` 态处理，可以简化视图逻辑处理
 
 ```ts
-import { createModel } from '@dobux/store'
+import { createModel } from 'Dobux'
 
 const counter = createModel()({
   state: {
