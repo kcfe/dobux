@@ -78,7 +78,7 @@ export function getRoutes() {
           exact: true,
           meta: {
             filePath: 'docs/index.md',
-            updatedTime: 1607062509000,
+            updatedTime: 1607073241000,
             title: 'Dobux - React State Management Library',
             hero: {
               title: 'Dobux',
@@ -229,7 +229,7 @@ export function getRoutes() {
           exact: true,
           meta: {
             filePath: 'docs/guide/examples.md',
-            updatedTime: 1607073242529,
+            updatedTime: 1607073241000,
             order: 3,
             slugs: [
               {
@@ -267,7 +267,7 @@ export function getRoutes() {
           exact: true,
           meta: {
             filePath: 'docs/guide/getting-started.md',
-            updatedTime: 1607062509000,
+            updatedTime: 1607073241000,
             order: 2,
             slugs: [
               {
@@ -315,7 +315,7 @@ export function getRoutes() {
           exact: true,
           meta: {
             filePath: 'docs/guide/index.md',
-            updatedTime: 1607071047788,
+            updatedTime: 1607073241000,
             order: 1,
             slugs: [
               {

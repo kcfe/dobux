@@ -7,6 +7,7 @@ import {
   ModelConfig, 
   ModelConfigEffect, 
   ModelContextProps, 
+  Noop, 
   StateSubscriber 
 } from '../types'
 import { invariant } from '../utils/invariant'
@@ -14,6 +15,7 @@ import { isObject } from '../utils/type'
 import { createProvider } from './createProvider'
 import { Container } from './Container'
 import { noop } from '../utils/func'
+import { isDev } from '../common/env'
 
 interface ModelOptions<C extends ModelConfig> {
   storeName: string
@@ -23,25 +25,54 @@ interface ModelOptions<C extends ModelConfig> {
   autoReset: boolean
   devTools: boolean
 }
+interface ModelInstance {
+  [key: string]: number
+}
+
+interface DevtoolExtension {
+  connect: (options: { name?: string }) => DevtoolInstance
+  disconnect: Noop
+}
+
+interface DevtoolInstance {
+  subscribe: (cb: (message: { type: string; state: any }) => void) => Noop
+  send: (actionType: string, payload: Record<string, unknown>) => void
+  init: (state: any) => void
+}
+
+const devtoolExtension: DevtoolExtension =
+  isDev && typeof window !== 'undefined' && (window as any).__REDUX_DEVTOOLS_EXTENSION__
 
 export class Model<C extends ModelConfig> {
-  public Provider: React.FC
+  static instances: ModelInstance = Object.create(null)
 
   private model: ContextPropsModel<C>
   private initialState: C['state']
 
-  private container: Container<C['state']>
+  private container = new Container<C['state']>()
   private currentDispatcher: Dispatch<any> = noop
   private isInternalUpdate = false
 
+  private instanceName: string
+  private devtoolInstance?: DevtoolInstance
+  private unsubscribeDevtool?: Noop
+  private isTimeTravel = false
+
+  public Provider: React.FC
   private useContext: () => ModelContextProps
   
   constructor(private options: ModelOptions<C>) {
-    const { name, config, rootModel } = options
+    const { storeName, name, config, rootModel } = options
+
+    this.instanceName = `${storeName}/${name}`
+
+    /* istanbul ignore else  */
+    if (!Model.instances[this.instanceName]) {
+      Model.instances[this.instanceName] = 0
+    }
     
     this.initialState = config.state
     this.model = this.initModel(config)
-    this.container = new Container<C['state']>()
 
     rootModel[name] = this.model
 
@@ -72,10 +103,30 @@ export class Model<C extends ModelConfig> {
     }
 
     useEffect(() => {
+      if (this.options.devTools) {
+        // a Model only creates one devtool instance
+        if (Model.instances[this.instanceName] === 0) {
+          this.initDevTools()
+        }
+
+        Model.instances[this.instanceName]++
+      }
+
       return (): void => {
         // unsubscribe when component unmount
         this.container.unsubscribe('state', subscriberRef.current as StateSubscriber<C['state']>)
         this.container.unsubscribe('effect', dispatcher)
+
+        if (this.unsubscribeDevtool) {
+          Model.instances[this.instanceName]--
+
+          // disconnect after all dependent components are destroyed
+          /* istanbul ignore else */
+          if (Model.instances[this.instanceName] <= 0) {
+            this.unsubscribeDevtool()
+            devtoolExtension?.disconnect()
+          }
+        }
       }
     }, [])
 
@@ -108,6 +159,10 @@ export class Model<C extends ModelConfig> {
   }
 
   private notify(name: string, state: C['state']): void {
+    if (this.devtoolInstance) {
+      this.devtoolInstance.send(`${this.options.name}/${name}`, state)
+    }
+
     this.container.notify(state)
   }
 
@@ -152,7 +207,12 @@ export class Model<C extends ModelConfig> {
 
         this.model.state = newState
 
-        this.notify('setValues', newState)
+        /* istanbul ignore next */
+        if (this.isTimeTravel) {
+          this.container.notify(newState)
+        } else {
+          this.notify('setValues', newState)
+        }
       }
     }
 
@@ -243,5 +303,26 @@ export class Model<C extends ModelConfig> {
 
     // @ts-ignore
     return config
+  }
+
+  private initDevTools(): void {
+    if (devtoolExtension) {
+      // https://github.com/zalmoxisus/redux-devtools-extension/blob/master/docs/API/Arguments.md#name
+      this.devtoolInstance = devtoolExtension.connect({
+        name: this.instanceName,
+      })
+
+      this.unsubscribeDevtool = this.devtoolInstance.subscribe(
+        /* istanbul ignore next */ message => {
+          if (message.type === 'DISPATCH' && message.state) {
+            this.isTimeTravel = true
+            this.model.reducers.setValues(JSON.parse(message.state))
+            this.isTimeTravel = false
+          }
+        }
+      )
+
+      this.devtoolInstance.init(this.initialState)
+    }
   }
 }
