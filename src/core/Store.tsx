@@ -71,7 +71,7 @@ export class Store<C extends Configs> {
   }
 
   private initModels(configs: C, options: Required<StoreOptions<C>>): StoreModels<C> {
-    const { name: storeName, autoReset, devTools } = options
+    const { name: storeName, autoReset, devtools } = options
     const rootModel = Object.create(null)
     const modelNames = Object.keys(configs)
 
@@ -97,7 +97,7 @@ export class Store<C extends Configs> {
         config,
         rootModel,
         autoReset: isArray(autoReset) ? (autoReset as any[]).indexOf(name) > -1 : autoReset,
-        devTools: isArray(devTools) ? (devTools as any[]).indexOf(name) > -1 : devTools,
+        devtools: isArray(devtools) ? (devtools as any[]).indexOf(name) > -1 : devtools,
       })
 
       return models

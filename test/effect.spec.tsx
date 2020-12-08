@@ -8,6 +8,8 @@ import { store } from './helper/store'
 
 console.error = jest.fn()
 
+jest.setTimeout(10000)
+
 describe('effect test', () => {
   it('effect should be async function', () => {
     const store = createStore({
@@ -34,6 +36,21 @@ describe('effect test', () => {
 
     expect(increaseAsync.loading).toBe(false)
     expect(increaseAsync.identifier).toBe(0)
+  })
+
+  it('effect should throw error when has error', () => {
+    const store = createStore({
+      counter,
+    })
+    const { Provider, useModel } = store
+
+    const { result } = createHook(Provider, useModel, 'counter')
+
+    const fetchError = result.current.effects.fetchError
+
+    return fetchError().catch((err: any) => {
+      expect(err).toBe('customer error')
+    })
   })
 
   it('should set loading to true when the effect is executed, and after execution, it should be set to false', async () => {

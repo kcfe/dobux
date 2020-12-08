@@ -13,12 +13,13 @@ export class Container<T> {
     if (type === 'state') {
       const stateSubscriber = payload as StateSubscriber<T>
 
+      /* istanbul ignore else */
       if (this.stateSubscribers.indexOf(stateSubscriber) === -1) {
         this.stateSubscribers.push(stateSubscriber)
       }
-    } else if (type === 'effect') {
+    } /* istanbul ignore else */ else if (type === 'effect') {
       const effectSubscriber = payload as EffectSubscriber
-
+      /* istanbul ignore else */
       if (this.effectSubscribers.indexOf(effectSubscriber) === -1) {
         this.effectSubscribers.push(effectSubscriber)
       }
@@ -50,17 +51,9 @@ export class Container<T> {
   public unsubscribe(type: 'effect', payload: EffectSubscriber): void
   public unsubscribe(type: SubscribeType, payload: StateSubscriber<T> | EffectSubscriber): void {
     if (type === 'state') {
-      if (this.stateSubscribers.length === 0) {
-        return
-      }
-
       const index = this.stateSubscribers.indexOf(payload as StateSubscriber<T>)
       this.stateSubscribers.splice(index, 1)
-    } else if (type === 'effect') {
-      if (this.effectSubscribers.length === 0) {
-        return
-      }
-
+    } /* istanbul ignore else */ else if (type === 'effect') {
       const index = this.effectSubscribers.indexOf(payload as EffectSubscriber)
       this.effectSubscribers.splice(index, 1)
     }

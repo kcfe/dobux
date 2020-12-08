@@ -1,4 +1,4 @@
 export const defaultOptions = {
   autoReset: false,
-  devTools: true,
+  devtools: true,
 }

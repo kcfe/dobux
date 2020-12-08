@@ -6,7 +6,7 @@ export function wait(ms: number) {
 
 export const defaultStoreOptions = {
   autoReset: false,
-  devTools: true,
+  devtools: true,
   name: 'dobuxStore',
 }
 

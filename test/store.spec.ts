@@ -1,17 +1,16 @@
 import { act } from '@testing-library/react-hooks'
+import { createModel } from '../src'
 import { Store } from '../src/core/Store'
 import { createHook } from './helper/createHook'
 import { defaultStoreOptions } from './helper/shared'
 
 const store = new Store(
   {
-    test: {
+    test: createModel()({
       state: {
         count: 1,
       },
-      reducers: {},
-      effects: () => ({}),
-    },
+    }),
   },
   defaultStoreOptions
 )
@@ -56,5 +55,55 @@ describe('Store test', () => {
     })
 
     expect(result.current.state).toBe(2)
+  })
+
+  it('state can be array', () => {
+    const { Provider, useModel } = new Store(
+      {
+        counter: {
+          state: [1, 2, 3],
+          reducers: {
+            increase(state) {
+              return 2
+            },
+          },
+          effects: () => ({}),
+        },
+      },
+      defaultStoreOptions
+    )
+
+    const { result } = createHook(Provider, useModel, 'counter')
+
+    expect(result.current.state).toEqual([1, 2, 3])
+  })
+
+  it('state can be object', () => {
+    const { Provider, useModel } = new Store(
+      {
+        counter: {
+          state: {
+            count: 1,
+          },
+          reducers: {
+            increase(state) {
+              state.count += 1
+            },
+          },
+          effects: () => ({}),
+        },
+      },
+      defaultStoreOptions
+    )
+
+    const { result } = createHook(Provider, useModel, 'counter')
+
+    expect(result.current.state.count).toBe(1)
+
+    act(() => {
+      result.current.reducers.increase()
+    })
+
+    expect(result.current.state.count).toBe(2)
   })
 })

@@ -16,6 +16,6 @@
     "outDir": "lib",
     "module": "es2015"
   },
-  "include": ["src"],
+  "include": ["src", "test/setupTests.ts"],
   "exclude": ["node_modules", "lib", "scripts", "test"]
 }

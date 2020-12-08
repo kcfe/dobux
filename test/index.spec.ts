@@ -18,6 +18,58 @@ describe('entry test', () => {
     expect(store).toBeInstanceOf(Store)
   })
 
+  it('should pass boolean to autoReset', () => {
+    const store = createStore(
+      {
+        counter: config,
+      },
+      {
+        autoReset: true,
+      }
+    )
+
+    expect(store).toBeInstanceOf(Store)
+  })
+
+  it('should pass array to autoReset', () => {
+    const store = createStore(
+      {
+        counter: config,
+      },
+      {
+        autoReset: ['counter'],
+      }
+    )
+
+    expect(store).toBeInstanceOf(Store)
+  })
+
+  it('should pass boolean to devtools', () => {
+    const store = createStore(
+      {
+        counter: config,
+      },
+      {
+        devtools: true,
+      }
+    )
+
+    expect(store).toBeInstanceOf(Store)
+  })
+
+  it('should pass array to devtools', () => {
+    const store = createStore(
+      {
+        counter: config,
+      },
+      {
+        devtools: ['counter'],
+      }
+    )
+
+    expect(store).toBeInstanceOf(Store)
+  })
+
   it('createModel should be defined', () => {
     expect(createModel).toBeDefined()
   })

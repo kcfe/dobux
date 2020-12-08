@@ -23,7 +23,7 @@ interface ModelOptions<C extends ModelConfig> {
   config: C
   rootModel: Record<string, unknown>
   autoReset: boolean
-  devTools: boolean
+  devtools: boolean
 }
 interface ModelInstance {
   [key: string]: number
@@ -40,6 +40,7 @@ interface DevtoolInstance {
   init: (state: any) => void
 }
 
+/* istanbul ignore next */
 const devtoolExtension: DevtoolExtension =
   isDev && typeof window !== 'undefined' && (window as any).__REDUX_DEVTOOLS_EXTENSION__
 
@@ -103,10 +104,11 @@ export class Model<C extends ModelConfig> {
     }
 
     useEffect(() => {
-      if (this.options.devTools) {
+      /* istanbul ignore else */
+      if (this.options.devtools) {
         // a Model only creates one devtool instance
         if (Model.instances[this.instanceName] === 0) {
-          this.initDevTools()
+          this.initDevtools()
         }
 
         Model.instances[this.instanceName]++
@@ -121,11 +123,11 @@ export class Model<C extends ModelConfig> {
         this.container.unsubscribe('state', subscriberRef.current as StateSubscriber<C['state']>)
         this.container.unsubscribe('effect', dispatcher)
 
+        /* istanbul ignore next */
         if (this.unsubscribeDevtool) {
           Model.instances[this.instanceName]--
 
           // disconnect after all dependent components are destroyed
-          /* istanbul ignore else */
           if (Model.instances[this.instanceName] <= 0) {
             this.unsubscribeDevtool()
             devtoolExtension?.disconnect()
@@ -163,6 +165,7 @@ export class Model<C extends ModelConfig> {
   }
 
   private notify(name: string, state: C['state']): void {
+    /* istanbul ignore next */
     if (this.devtoolInstance) {
       this.devtoolInstance.send(`${this.options.name}/${name}`, state)
     }
@@ -286,6 +289,7 @@ export class Model<C extends ModelConfig> {
 
         set(newValue) {
           // avoid modify effect loading out of internal
+          /* istanbul ignore else */
           if(newValue !== value && that.isInternalUpdate) {
             value = newValue
             that.container.notify()
@@ -309,7 +313,8 @@ export class Model<C extends ModelConfig> {
     return config
   }
 
-  private initDevTools(): void {
+  private initDevtools(): void {
+    /* istanbul ignore next */
     if (devtoolExtension) {
       // https://github.com/zalmoxisus/redux-devtools-extension/blob/master/docs/API/Arguments.md#name
       this.devtoolInstance = devtoolExtension.connect({
