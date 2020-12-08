@@ -12,7 +12,7 @@ type StoreModels<C extends Configs> = {
 export class Store<C extends Configs> {
   private models: StoreModels<C>
   
-  constructor(configs: C, options: Required<StoreOptions<C>>) {    
+  constructor(private configs: C, options: Required<StoreOptions<C>>) {    
     this.models = this.initModels(configs, options)
   }
 
@@ -40,27 +40,31 @@ export class Store<C extends Configs> {
   }
 
   public useModel = <K extends keyof C, S = undefined, R = undefined, E = undefined>(
-    namespace: K,
+    modelName: K,
     mapStateToProps: MapStateToProps<Models<C>[K], S> = (state: S): S => state
   ): Models<C, S, R, E>[K] => {
-    invariant(!isUndefined(namespace), `[store.useModel] Expected the namespace not to be empty`)
+    invariant(!isUndefined(modelName), `[store.useModel] Expected the modelName not to be empty`)
+
+    const modelNames = Object.keys(this.configs)
+
+    invariant(modelNames.indexOf(modelName as string) > -1, `[store.useModel] Expected the modelName to be one of ${modelNames}, but got ${modelName}`)
 
     invariant(
       isUndefined(mapStateToProps) || isFunction(mapStateToProps),
       `[store.useModel] Expected the mapStateToProps to be function or undefined, but got ${typeof mapStateToProps}`
     )
 
-    return this.models[namespace].useModel(mapStateToProps)
+    return this.models[modelName].useModel(mapStateToProps)
   }
 
   public withModel = <K extends keyof C, S = undefined>(
-    namespace: K,
+    modelName: K,
     mapStateToProps?: MapStateToProps<Models<C>[K], S>
   ): HOC => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return Component => {
       return (props): React.ReactElement => {
-        const store = this.useModel(namespace, mapStateToProps)
+        const store = this.useModel(modelName, mapStateToProps)
         return <Component {...store} {...props} />
       }
     }
