@@ -16,14 +16,14 @@ export const config = {
     data: {},
   },
   reducers: {
-    increase(state) {
+    increase(state: any) {
       state.count++
     },
-    decrease(state) {
+    decrease(state: any) {
       state.count--
     },
   },
-  effects: (store, rootStore) => ({
+  effects: (store: any, rootStore: any) => ({
     async increaseAsync() {
       await wait(500)
       store.reducers.increase()
@@ -42,17 +42,7 @@ export const defaultModelOptions = {
   name: 'counter',
   config: {
     ...config,
-    effects: {
-      async increaseAsync() {
-        await wait(500)
-      },
-
-      async fetchError() {
-        return new Promise((_, reject) => {
-          reject('customer error')
-        })
-      },
-    },
+    effects: {},
   },
   rootModel: Object.create(null),
   autoReset: false,

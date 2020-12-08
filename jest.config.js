@@ -2,11 +2,12 @@
 module.exports = {
   roots: ['<rootDir>'],
   collectCoverage: true,
-  collectCoverageFrom: ['**/*.{ts,tsx}', '!**/node_modules/**'],
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!**/.umi/**'],
   coverageDirectory: 'coverage',
   testRegex: 'test/(.+)\\.spec\\.(jsx?|tsx?)$',
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  setupFilesAfterEnv: ['./test/setupTests.ts'],
 }
