@@ -1,6 +1,6 @@
 import { Noop } from '../types'
 
-/* istanbul-ignore-next */
+/* istanbul ignore next */
 function isTypeof(target: any, type: string): boolean {
   if (!type) {
     return false
@@ -41,10 +41,6 @@ export function isFunction(target: any): target is Noop {
 
 export function isObject(target: any): target is Record<string, unknown> {
   return isTypeof(target, 'object')
-}
-
-export function isModule(target: any): target is NodeModule {
-  return isTypeof(target, 'module')
 }
 
 export function isArray(target: any): target is Array<any> {
