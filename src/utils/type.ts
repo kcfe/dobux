@@ -1,5 +1,6 @@
 import { Noop } from '../types'
 
+/* istanbul-ignore-next */
 function isTypeof(target: any, type: string): boolean {
   if (!type) {
     return false

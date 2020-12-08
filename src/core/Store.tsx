@@ -12,7 +12,7 @@ type StoreModels<C extends Configs> = {
 export class Store<C extends Configs> {
   private models: StoreModels<C>
   
-  constructor(configs: C, options: StoreOptions<C>) {    
+  constructor(configs: C, options: Required<StoreOptions<C>>) {    
     this.models = this.initModels(configs, options)
   }
 
@@ -66,7 +66,7 @@ export class Store<C extends Configs> {
     }
   }
 
-  private initModels(configs: C, options: StoreOptions<C>): StoreModels<C> {
+  private initModels(configs: C, options: Required<StoreOptions<C>>): StoreModels<C> {
     const { name: storeName, autoReset, devTools } = options
     const rootModel = Object.create(null)
     const modelNames = Object.keys(configs)

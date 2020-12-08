@@ -113,6 +113,10 @@ export class Model<C extends ModelConfig> {
       }
 
       return (): void => {
+        if(this.options.autoReset) {
+          this.model.state = this.initialState
+        }
+        
         // unsubscribe when component unmount
         this.container.unsubscribe('state', subscriberRef.current as StateSubscriber<C['state']>)
         this.container.unsubscribe('effect', dispatcher)

@@ -147,9 +147,9 @@ export interface ModelContextProps {
 export type StoreProvider = React.FC<React.PropsWithChildren<any>>
 
 export interface StoreOptions<C extends Configs> {
-  name: string
-  autoReset: boolean | UnionToTuple<keyof C>
-  devTools: boolean | UnionToTuple<keyof C>
+  name?: string
+  autoReset?: boolean | UnionToTuple<keyof C>
+  devTools?: boolean | UnionToTuple<keyof C>
 }
 
 export type HOC<InjectProps = any> = <P>(
