@@ -2,7 +2,7 @@
 import { createBrowserHistory } from '/Users/ender/learning/github/dobux/node_modules/@umijs/runtime'
 
 let options = {
-  basename: '/dobux',
+  basename: '/',
 }
 if ((<any>window).routerBase) {
   options.basename = (<any>window).routerBase

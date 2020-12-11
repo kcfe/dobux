@@ -38,6 +38,16 @@
           "meta": {
             "order": 3
           }
+        },
+        {
+          "path": "/guide/devtools",
+          "title": "Devtools",
+          "meta": {}
+        },
+        {
+          "path": "/guide/faq",
+          "title": "FAQ",
+          "meta": {}
         }
       ]
     }

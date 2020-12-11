@@ -9,71 +9,104 @@ toc: menu
 
 # API
 
-## `createModel(model)`
+## `createModel<RootModel, 'modelName'>()(model)`
 
-创建一个 `Dobux` 模型，一个 model 包含如下三个属性
+创建一个 `Dobux` 模型，它是一个高阶函数，首次执行时没有入参，存在两个范型参数：
+
+- `type RootModel`：整个 `store` 的根模型，通过 `dobux` 提供 `Models<models>` 类型导出，[示例代码]()
+- `type modelName: string`：当前模型的名称，是一个 `store` 下会包含多个 `Model` 之一，通常传入当前定义的 `Model`，[示例代码]()
+
+一个 `model` 包含如下三个属性
 
 ### model.state
 
 `state: any`
 
-当前模型的初始状态，必传
+当前模型的初始状态，通常为一个 JavaScript 对象，必传
 
 ```tsx | pure
-const model = {
+import { createModel } from 'dobux'
+import { RootModel } from 'path/to/type'
+
+const counter = createModel<RootModel, 'counter'>()({
   state: {
     count: 0,
   },
-}
+})
 ```
 
 ### model.reducers
 
 `reducers?: { [string]: (state: State, ...payload: any) => void }`
 
-模型状态的修改必须通过 `reducer` 进行，必传。调用该函数会默认传入以下参数：
+模型状态的修改必须通过 `reducer` 进行，非必传。用户调用该函数执行时会默认传入以下参数：
 
-- `state`：当前模型最新的状态，直接修改会生成一个新的对象并触发组件更新
+- `state`：当前模型最新的状态，直接修改会生成一个新的对象并触发对应的组件更新
 - `payload`：调用该 `reducer` 时传入的参数，支持传入多个
 
-```tsx | pure
-const model = {
+```ts
+import { createModel } from 'dobux'
+import { RootModel } from 'path/to/type'
+
+const counter = createModel<RootModel, 'counter'>()({
   state: {
     count: 0,
   },
   reducers: {
-    increase(state: State, payload: any) {
+    increase(state, payload: number) {
       state.count += 1
     },
-    decrease(state: State, a: number, b?: number) {
+    decrease(state, a: number, b?: number) {
       state.count -= 1
     },
   },
-}
-```
-
-`@dobux/store` 提供了三个内置的 `reducer`，可以很方便进行状态修改，比如更新表单的字段
-
-- `reducers.setValue(key: K extends keyof State, value: State[K])`
-
-```tsx | pure
-// modify specify field
-reducers.setValue('count', 10)
-```
-
-- `reducers.setValues(partialState: Partial<State>)`
-
-```tsx | pure
-// batch modify specify field
-reducers.setValues({
-  count: 5,
-  ...
 })
 ```
 
-- `reducers.reset(key?: K extends keyof State)`
+`Dobux` 提供了三个内置的 `reducer`，可以很方便的进行状态更新，比如更新（重置）表单的字段
 
-```tsx | pure
+`reducers.setValue(key: K extends keyof State, value: State[K])`
+
+指定字段状态更新
+
+- `key`：需要更新的字段名称，名称属于 `Object.keys(state)` 其中的一个，必传
+
+```ts
+reducers.setValue('count', 10)
+
+reducers.setValues('userInfo', {
+  name: 'dobux',
+  age: 1,
+})
+```
+
+`reducers.setValues(partialState: Partial<State>)`
+
+批量状态更新
+
+- `partialState`：`state` 的部分数据，需要注意的是只能批量更新第一层数据，如果需要更新深层的数据，需要手动合并，非必传
+
+```ts
+reducers.setValues({
+  count: 5,
+})
+
+reducers.setValues({
+  count: 5,
+  userInfo: {
+    ...state.userInfo,
+    name: 'dobux',
+  },
+})
+```
+
+`reducers.reset(key?: K extends keyof State)`
+
+重置状态为初始值
+
+- `key`：如果没有传入则重置整个 `state`，如果传入则重置指定的字段，非必传
+
+```ts
 // reset total state
 reducers.reset()
 
@@ -83,84 +116,92 @@ reducers.reset('count')
 
 ### model.effects
 
-`effects: (store: Store, rootStore: RootStore) => { [name:string]: (...payload: any) => Promise<void> }`
+`effects: (model: model, rootModel: RootModel) => { [name: string]: (...payload: any) => Promise<any> }`
 
 所有的副作用函数都需要在 `effects` 中处理，调用该函数会默认传入以下参数：
 
-- `store`：当前模型实例
-  - `store.state`
-  - `store.reducers`
-  - `store.effects`
-- `rootStore`：整个 `Store` 的模型实例
-  - `{ [namespace: string]: { state, reducers, effects } }`
+- `model`：当前模型实例
+  - `model.state`
+  - `model.reducers`
+  - `model.effects`
+- `rootModel`：整个 `store` 的根模型实例，保存了整个 `store` 下所有的 `model`
+  - `{ [modelName: string]: { state, reducers, effects } }`
 - `payload`：调用该 `effect` 时传入的参数，支持传入多个
 
-```tsx | pure
-const model = {
+```ts
+import { createModel } from 'dobux'
+import { RootModel } from 'path/to/type'
+
+const counter = createModel<RootModel, 'counter'>()({
   state: {
     count: 0,
   },
   reducers: {
-    increase(state: State) {
+    increase(state) {
       state.count += 1
     },
   },
-  effects: (store: Store, rootStore: RootStore) => ({
+  effects: (model, rootModel) => ({
     async increaseAsync(payload: number) {
       await wait(1000)
-      store.reducers.increase()
+      model.reducers.increase()
     },
   }),
-}
+})
 ```
 
-## `store = createStore(models)`
+## `store = createStore(models, options)`
 
-用于创建一个 `Store` 实例，其中 `models` 是一个对象，它的 `key` 值为命名空间，在组件内调用 `useModel(key)` 消费数据时传入，`value` 为每一个命名空间下的模型配置项 `model`
+用于创建一个 `Store` 实例
 
-```tsx | pure
-import { createStore } from '@dobux/store'
+- `models`: 通过 [createModel](#createmodelrootmodel-modelnamemodel) 创建的多个 `model` 组成的一个对象，其中对象的 `key` 值为模型的名称，在组件内调用 `useModel(key)` 消费数据时传入
 
-interface State {
-  count: number
-}
+- `options.name?: string`：`Store` 的名称，显示在 [redux devtools](/guide/devtools) 的面板上，非必传，默认为 `dobux/number`
 
-const store = createStore({
-  counter: {
-    state: {
-      count: 0,
+- `options.autoReset?: boolean | keyof models`：组件内部通过 `useModel` 消费数据源时，在组件卸载的时候是否需要自动重置为初始的数据，非必传，默认为 `false`，如果传入 `true` 表示当前 `store` 对应的多个 `model` 都会自动卸载，传入数组可以执行某些 `model` 执行卸载操作
+
+- `options.devtools?: boolean | keyof models`：在开发环境下模型是否支持连接 `redux devtools`，非必传，默认为 `true`，如果传入 `false` 表示当前 `store` 对应的多个 `model` 都不支持连接 `devtools`，传入数组可以指定某些 `model` 不连接 `devtool`
+
+```ts
+import { createModel, createStore } from 'dobux'
+
+const counter = createModel()({
+  state: {
+    count: 0,
+  },
+  reducers: {
+    increase(state, payload: number) {
+      state.count += 1
     },
-    reducers: {
-      increase(state: State, payload: number, store) {
-        state.count += 1
-      },
-      decrease(state: State, payload: number, store) {
-        state.count -= 1
-      },
-    },
-    effects: {
-      async increaseAsync(payload: number, store) {
-        await wait(2000)
-        store.reducers.increase()
-      },
+    decrease(state, payload: number) {
+      state.count -= 1
     },
   },
+  effects: (model, rootModel) => ({
+    async increaseAsync(payload: number) {
+      await wait(1000)
+      model.reducers.increase()
+    },
+  }),
+})
+
+const store = createStore({
+  counter,
 })
 ```
 
 ### `store.Provider`
 
-`Provider(props: { children: ReactElement, autoReset?: boolean, devTools? boolean })`
+`Provider(props: { children: React.ReactElement })`
 
 通过 `Provider` 将 `Store` 实例挂载到 `React` 应用，以便组件能够通过 `Hooks` 的方式进行交互
 
 - `props.children`：使用 store 的子节点
-- `props.autoReset`：是否在组件卸载的时候将数据重置为默认值，默认为 `false`
-- `props.devTools`：是否在开发环境链接 redux devtools，默认为 `true`
 
 ```tsx | pure
 import React from 'react'
 import ReactDOM from 'react-dom'
+import App from './App.tsx'
 import store from './store'
 
 const { Provider } = store
@@ -175,12 +216,9 @@ ReactDOM.render(
 
 ### `store.withProvider`
 
-`withProvider(FunctionComponent, options?: { autoReset?: boolean, devTools?: boolean }): ReactElement`
+`withProvider(React.FunctionComponent): React.ReactElement`
 
-- `options.autoReset`：是否在组件卸载的时候将数据重置为默认值，默认为 `false`
-- `options.devTools`：是否在开发环境链接 redux devtools，默认为 `true`
-
-使用 `Provider` 时模型实例只能在子组件内部 `useModel` 的时候拿到，对于一些特殊的业务场景希望在当前组件中获取模型实例并修改状态可以使用高阶组件 `withProvider`
+与 `Provider` 的区别时，该组件是一个 **高阶组件**，通过 `useModel` 获取 `store` 实例必须要在 `Provider | withProvider` 的子组件中执行，对于不希望嵌套一层组件的需求就可以使用 `withProvider` 包裹
 
 ```tsx | pure
 import { Tabs } from 'antd'
@@ -228,26 +266,26 @@ export default withRouter(withProvider(App))
 
 ### `store.useModel`
 
-`useModel: (modelName: string, mapStateToProps?: (state: State) => any ) => { state, reducers, effects }`
+`useModel: (modelName, mapStateToProps) => { state, reducers, effects }`
 
-通过该 API 在组件内获取模型实例，接受两个参数：
+通过该 API 可以在函数组件内获取对应模型的实例，接受两个参数：
 
-- `modelName`：执行 `createStore(models)` 时传入的对象 `key` 值，必传
-- `mapStateToProps`：接受当前模型原始的 `state` 为参数，返回一个自定义的对象，表示当前组件只有在这个返回对象改变时才会 **re-render** 用于性能优化，阻止不必要的渲染，非必传
+- `modelName: string`：执行 `createStore(models)` 时传入的对象 `key` 值 `keyof models`，必传
+- `mapStateToProps?: (state: State) => any`：接受当前模型最新的 `state` 为参数，返回一个自定义的对象，表示当前组件只有在这个返回对象发生改变时才会重新触发组件的渲染，用于性能优化，阻止不必要的渲染，非必传
 
 返回结果的信息如下：
 
-- `state`：当前组件依赖的模型状态
+- `state`：当前组件依赖模型对应的状态
 - `reducers`：当前组件可用于修改模型状态的方法
 - `effects`：当前组件可用于执行副作用的方法，比如调用异步请求，其中 `effects.effectName.loading` 记录了异步操作时的状态，可以简化视图层逻辑
 
 #### 基本用法
 
 ```tsx | pure
-import React, { FC } from 'react'
+import React from 'react'
 import store from './store'
 
-const Counter: FC = () => {
+const Counter: React.FC = () => {
   const { state, reducers, effects } = store.useModel('counter')
 
   if (effects.increaseAsync.loading) {
@@ -285,33 +323,33 @@ const Counter: FC = () => {
 
 ### `store.withModel`
 
-`withModel: (namespace: string, mapStateToProps?: (state: State) => any) => (Component) => React.ComponentType`
+`withModel: (modelName, mapStateToProps) => (Component) => React.ComponentType`
 
-对于 Class Component 可以通过 `withModel` 高阶组件进行数据源的交互，该组件接受两个参数
+对于 Class Component 可以通过 `withModel` 高阶组件进行模型的消费，该组件接受两个参数：
 
-- `namespace`：执行 `createStore(models)` 时传入的对象 `key` 值，必传
-- `mapStateToProps`：接受当前模型原始的 `state` 为参数，返回一个自定义的对象，表示当前组件只有在这个返回对象改变时才会 **re-render** 用于性能优化，阻止不必要的渲染，非必传
+- `modelName: string`：执行 `createStore(models)` 时传入的对象 `key` 值 `keyof models`，必传
+- `mapStateToProps?: (state: State) => any`：接受当前模型最新的 `state` 为参数，返回一个自定义的对象，表示当前组件只有在这个返回对象发生改变时才会重新触发组件的渲染，用于性能优化，阻止不必要的渲染，非必传
 
 调用该高阶组件会在传入组件的 `props` 上挂载以下三个属性：
 
-- `props.state`：当前组件依赖的模型状态
+- `props.state`：当前组件依赖模型对应的状态
 - `props.reducers`：当前组件可用于修改模型状态的方法
 - `props.effects`：当前组件可用于执行副作用的方法，比如调用异步请求，其中 `effects.effectName.loading` 记录了异步操作时的状态，可以简化视图层逻辑
 
 #### 基本用法
 
 ```tsx | pure
-import store, { RootStoreType } from './store'
+import store, { RootModel } from './store'
 
 const { withModel } = store
 
-interface Props {
-  state: RootStoreType['counter']['state']
-  reducers: RootStoreType['counter']['reducers']
-  effects: RootStoreType['counter']['effects']
+export interface CounterProps {
+  state: RootModel['counter']['state']
+  reducers: RootModel['counter']['reducers']
+  effects: RootModel['counter']['effects']
 }
 
-class Count extends React.Component<Props> {
+class Counter extends React.Component<CounterProps> {
   handleIncrease = () => {
     const { reducers } = this.props
     reducers.increase()
@@ -320,6 +358,11 @@ class Count extends React.Component<Props> {
   handleDecrease = () => {
     const { reducers } = this.props
     reducers.decrease()
+  }
+
+  handleIncreaseAsync = () => {
+    const { effects } = this.props
+    effects.increaseAsync()
   }
 
   render() {
@@ -334,12 +377,13 @@ class Count extends React.Component<Props> {
         <p>The count is: {state.count}</p>
         <button onClick={this.handleIncrease}>+</button>
         <button onClick={this.handleDecrease}>-</button>
+        <button onClick={this.handleIncreaseAsync}>async</button>
       </div>
     )
   }
 }
 
-export default withModel('counter')(Count)
+export default withModel('counter')(Counter)
 ```
 
 #### 性能优化
@@ -347,17 +391,17 @@ export default withModel('counter')(Count)
 在某些组件中可能只需要依赖某一数据源的部分状态，同时只有当这部分依赖的状态变化时才会重新渲染，可以通过 `withModel` 第二个参数的 `mapStateToProps` 属性进行控制
 
 ```tsx | pure
-import store, { RootStoreType } from './store'
+import store, { RootModel } from './store'
 
 const { withModel } = store
 
-interface Props {
-  state: Pick<RootStoreType['counter']['state'], 'count'>
-  reducers: RootStoreType['counter']['reducers']
-  effects: RootStoreType['counter']['effects']
+export interface CounterProps {
+  state: Pick<RootModel['counter']['state'], 'count'>
+  reducers: RootModel['counter']['reducers']
+  effects: RootModel['counter']['effects']
 }
 
-class Count extends React.Component<Props> {
+class Counter extends React.Component<CounterProps> {
   handleIncrease = () => {
     const { reducers } = this.props
     reducers.increase()
@@ -366,6 +410,11 @@ class Count extends React.Component<Props> {
   handleDecrease = () => {
     const { reducers } = this.props
     reducers.decrease()
+  }
+
+  handleIncreaseAsync = () => {
+    const { effects } = this.props
+    effects.increaseAsync()
   }
 
   render() {
@@ -380,6 +429,7 @@ class Count extends React.Component<Props> {
         <p>The count is: {state.count}</p>
         <button onClick={this.handleIncrease}>+</button>
         <button onClick={this.handleDecrease}>-</button>
+        <button onClick={this.handleIncreaseAsync}>async</button>
       </div>
     )
   }

@@ -4,7 +4,7 @@ order: 2
 
 # 快速上手
 
-<Alert>Tips: 请确保你的 React 版本 >= 16.8.0</Alert>
+<Alert>Tips: 请确保你的 React 版本 >= **16.8.0**</Alert>
 
 ## 安装
 
@@ -28,7 +28,11 @@ $ yarn add dobux
 
 ## 定义模型
 
-一个 `Dobux` 模型（model）由三个部分组成，它们分别是 `state`，`reducers` 以及 `effects`，其中 `state` 保存了当前模型的状态，`reducers` 是用户改变 `state` 的唯一方式，`effects` 用于处理副作用
+通过调用 `createModel` 来创建一个 `Dobux Model`。每个 `Model` 由三部分组成：
+
+- `state: any`：当前模型的状态数据，可以是任意值，通常是一个 JavaScript 对象，必传
+- `reducers?: object`：修改模型状态的同步方法，可以包含多个改变状态的函数，非必传
+- `effects?: (model, rootModel) => object`：用于处理副作用，其中 `model` 表示当前使用 `createModel` 生成的模型；`rootModel` 表示当前 `store` 下的所有模型，非必传
 
 ```ts
 // model.ts
@@ -47,10 +51,10 @@ export const counter = createModel<RootModel, 'counter'>()({
       state.count -= 1
     },
   },
-  effects: (store, rootModel) => ({
+  effects: (model, rootModel) => ({
     async increaseAsync() {
       await wait(2000)
-      store.reducers.increase()
+      model.reducers.increase()
     },
   }),
 })
@@ -58,7 +62,11 @@ export const counter = createModel<RootModel, 'counter'>()({
 
 ## 消费模型
 
-调用函数 `createStore` 传入自定义的模型会创建一个 `Store` 的实例，该实例上包含了模型的承载组件 `withProvider（Provider）`，以及 **hook style** 的 API `useModel`，在函数组件内部可以通过模型的唯一名称获取指定的 `model` 进行消费
+通过调用 `createStore` 传入多个自定义模型会创建一个 `Store` 的实例，该实例上包含了以下属性：
+
+- `Provider: React.FC`：函数组件，生成的多个 `Model` 实例会挂载在该组件的内部供 `useModel` 使用
+- `withProvider: React.FC`：高阶函数，生成的多个 `Model` 实例会挂载在该组件的内部供 `useModel` 使用
+- `useModel: (modelName: string) => { state, reducers, effects }`：在函数组件内部可以通过模型的唯一名称获取指定的 `model` 进行消费
 
 ```tsx | pure
 // index.tsx
@@ -86,13 +94,12 @@ const Counter: React.FC = () => {
     <div className="counter">
       <p>The count is: {state.count}</p>
       <button onClick={handleIncrease}>+</button>
-      <button onClick={handleDecrease}>-</button
+      <button onClick={handleDecrease}>-</button>
     </div>
   )
 }
 
-// 通过 withProvider 获取挂载在 Context 上的所有 model 实例
 export default withProvider(Counter)
 ```
 
-> 注：在 `index.tsx` 中导出 `RootModel` 类型仅仅是为了 ts 类型约束的类型推断，[详见](/guide/faq.html#实例化-store-时为什么要对-model-进行循环引用？)
+> 注：在 `index.tsx` 中导出 `RootModel` 类型仅仅是为了 ts 类型约束的类型推断，[详见](/guide/faq#实例化-store-时为什么要对-model-进行循环引用？)

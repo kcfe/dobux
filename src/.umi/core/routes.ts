@@ -150,8 +150,8 @@ export function getRoutes() {
               },
               {
                 depth: 2,
-                value: 'createModel(model)',
-                heading: 'createmodelmodel',
+                value: "createModel<RootModel, 'modelName'>()(model)",
+                heading: 'createmodelrootmodel-modelnamemodel',
               },
               {
                 depth: 3,
@@ -170,8 +170,8 @@ export function getRoutes() {
               },
               {
                 depth: 2,
-                value: 'store = createStore(models)',
-                heading: 'store--createstoremodels',
+                value: 'store = createStore(models, options)',
+                heading: 'store--createstoremodels-options',
               },
               {
                 depth: 3,
@@ -219,6 +219,38 @@ export function getRoutes() {
           title: 'API',
         },
         {
+          path: '/guide/devtools',
+          component: dynamic({
+            loader: () =>
+              import(
+                /* webpackChunkName: 'docs__guide__devtools.md' */ '/Users/ender/learning/github/dobux/docs/guide/devtools.md'
+              ),
+          }),
+          exact: true,
+          meta: {
+            filePath: 'docs/guide/devtools.md',
+            updatedTime: 1607600313936,
+            slugs: [
+              {
+                depth: 1,
+                value: 'Devtools',
+                heading: 'devtools',
+              },
+              {
+                depth: 2,
+                value: '多 Model travel',
+                heading: '多-model-travel',
+              },
+            ],
+            title: 'Devtools',
+            nav: {
+              path: '/guide',
+              title: 'Guide',
+            },
+          },
+          title: 'Devtools',
+        },
+        {
           path: '/guide/examples',
           component: dynamic({
             loader: () =>
@@ -255,6 +287,50 @@ export function getRoutes() {
             },
           },
           title: '例子',
+        },
+        {
+          path: '/guide/faq',
+          component: dynamic({
+            loader: () =>
+              import(
+                /* webpackChunkName: 'docs__guide__faq.md' */ '/Users/ender/learning/github/dobux/docs/guide/faq.md'
+              ),
+          }),
+          exact: true,
+          meta: {
+            filePath: 'docs/guide/faq.md',
+            updatedTime: 1607062509000,
+            slugs: [
+              {
+                depth: 1,
+                value: 'FAQ',
+                heading: 'faq',
+              },
+              {
+                depth: 3,
+                value: '实例化 Store 时为什么要对 Model 进行循环引用？',
+                heading: '实例化-store-时为什么要对-model-进行循环引用？',
+              },
+              {
+                depth: 3,
+                value: '路由之间切换时 Model 的状态会一直保存，但是业务需要自动卸载？',
+                heading: '路由之间切换时-model-的状态会一直保存，但是业务需要自动卸载？',
+              },
+              {
+                depth: 3,
+                value:
+                  '多 Model 模式下，一个 Model 的改变会影响依赖其他 Model 的组件刷新，引起不必要的渲染吗？',
+                heading:
+                  '多-model-模式下，一个-model-的改变会影响依赖其他-model-的组件刷新，引起不必要的渲染吗？',
+              },
+            ],
+            title: 'FAQ',
+            nav: {
+              path: '/guide',
+              title: 'Guide',
+            },
+          },
+          title: 'FAQ',
         },
         {
           path: '/guide/getting-started',
@@ -330,11 +406,6 @@ export function getRoutes() {
               },
               {
                 depth: 2,
-                value: '数据流向',
-                heading: '数据流向',
-              },
-              {
-                depth: 2,
                 value: '核心概念',
                 heading: '核心概念',
               },
@@ -362,6 +433,11 @@ export function getRoutes() {
                 depth: 4,
                 value: 'Effect',
                 heading: 'effect',
+              },
+              {
+                depth: 2,
+                value: '数据流向',
+                heading: '数据流向',
               },
             ],
             title: '介绍',
