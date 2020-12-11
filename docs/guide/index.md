@@ -16,19 +16,17 @@ order: 1
 
 ## 核心概念
 
-### Store
-
-在使用 `Dobux` 的应用中允许创建多个 `store` 实例。它可以用于管理一些全局共享的状态，比如用户信息、用户权限等；同时可以管理一个路由下多个组件的共享状态；还可以单独管理一个组件的状态。每个 `store` 实例都会对应一组模型集合，它们之间是相互独立，互不干扰的
-
 ### Model
 
-每一个 `Store` 都会包含一个或多个 `Model`（模型）。每个 `Model` 会与一个组件（多个共享组件）的共享状态 `state` 对应起来，同时包含了用于触发状态变更的 `reducers` 以及 `effects`，在组件视图中最终消费的产物就是这个 `Model`，同一个 `Store` 中的多个 `Model` 之间是可以相互调用的
+对于 `React` 这种组件化的开发方式，一个页面通常会抽象为多个组件，每个组件可能会维护多个内部状态用于控制组件的表现行为。在组件内部还会存在一些副作用的调用，最常见的就是 `Ajax` 请求。我们将这一组内部状态、用于修改内部状态的方法以及副作用函数的组合称为 **Model（模型）**
+
+在 `Dobux` 中 `Model` 是最基本的单元，每个 `Model` 会包含以下三个部分：
 
 #### State
 
 `type State = any`
 
-`State` 保存了当前模型的数据状态，通常表现为一个 JavaScript 对象（当然它可以是任何值）；操作的时候每次都要当作不可变数据（immutable data）来对待，保证每次都是全新对象，没有引用关系，这样才能保证 `State` 的独立性以及依赖的正确性
+`State` 保存了当前模型的状态，通常表现为一个 JavaScript 对象（当然它可以是任何值）；操作的时候每次都要当作不可变数据（immutable data）来对待，保证每次都是全新对象，没有引用关系，这样才能保证 `State` 的独立性以及依赖的正确性
 
 ```ts
 import { createModel } from 'dobux'
@@ -44,7 +42,7 @@ const counter = createModel()({
 
 `type Reducer<S, P> = (state: S, ...payload: P) => void`
 
-在 `Dobux` 中所有数据状态的改变都必须通过 `Reducer`，它是一个同步执行的函数，接受多个参数
+在 `Dobux` 中所有模型状态的改变都必须通过 `Reducer`，它是一个同步执行的函数，接受多个参数
 
 - `state`：当前模型的最新状态
 - `...payload: any[]`：调用方传入的多个参数
@@ -88,7 +86,7 @@ reducers.reset('count')
 
 `Effect` 被称为副作用，在我们的应用中，最常见的就是异步操作。它来自于函数编程的概念，之所以叫副作用是因为它使得我们的函数变得不纯，同样的输入不一定获得同样的输出
 
-在 `Dobux` 中所有副作用处理通过调用 `Effect` 执行，通常会在副作用中发送异步请求或者调用其他模型
+在 `Dobux` 中副作用处理通过调用 `Effect` 执行，通常会在副作用中发送异步请求或者调用其他模型
 
 ```ts
 import { createModel } from 'dobux'
@@ -111,7 +109,7 @@ const counter = createModel()({
 })
 ```
 
-`Dobux` 内置了异步操作 `loading` 态处理，在视图中可以通过 `effects.xxx.loading` 就能获取当前副作用的 `loading` 状态，简化了视图逻辑处理
+`Dobux` 内置了异步操作 `loading` 态处理，在视图中通过 `effects.effectName.loading` 就可以获取当前副作用的 `loading` 状态，简化了视图逻辑处理
 
 ```tsx | pure
 const Counter: React.FC = () => {
@@ -144,9 +142,40 @@ const Counter: React.FC = () => {
 }
 ```
 
+### Store
+
+在 `Dobux` 中 `Model` 不能独立的完成状态的管理和共享。`Store` 作为 `Model` 的载体可以赋予它这部分的能力。每一个 `Store` 都会包含一个或多个 `Model`，同一个 `Store` 下的一组 `Model` 之间是相互独立、互不干扰的
+
+一个应用可以创建多个 `Store`，它们之间也是是相互独立、互不干扰的
+
+```ts
+import { createModel, createStore } from 'dobux'
+
+const counter = createModel()({
+  state: {
+    count: 0,
+  },
+  reducers: {
+    increase(state) {
+      state.count += 1
+    },
+  },
+  effects: (model, rootModel) => ({
+    async increaseAsync() {
+      await wait(2000)
+      model.reducers.increase()
+    },
+  }),
+})
+
+const store = createStore({
+  counter,
+})
+```
+
 ## 数据流向
 
-数据的改变发生通常是通过用户交互行为触发的，当此类行为会改变数据的时候可以直接调用 `Reducers` 改变 State ，如果需要执行副作用（比如异步请求）则需要先调用 `Effects`，执行完副作用后再调用 `Reducers` 改变 `State`
+数据的改变发生通常是通过用户交互行为触发的，当此类行为触发需要对模型状态修改的时候可以直接调用 `Reducers` 改变 `State` ，如果需要执行副作用（比如异步请求）则需要先调用 `Effects`，执行完副作用后再调用 `Reducers` 改变 `State`
 
 <div style="text-align: center">
   <img width="800px" src="/dobux-flow.png" />

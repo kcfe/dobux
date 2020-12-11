@@ -34,10 +34,15 @@
         },
         {
           "path": "/guide/examples",
-          "title": "例子",
+          "title": "示例",
           "meta": {
             "order": 3
           }
+        },
+        {
+          "path": "/guide/best-practice",
+          "title": "最佳实践",
+          "meta": {}
         },
         {
           "path": "/guide/devtools",

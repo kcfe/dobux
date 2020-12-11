@@ -134,7 +134,7 @@ export function getRoutes() {
           exact: true,
           meta: {
             filePath: 'docs/api/index.md',
-            updatedTime: 1607062509000,
+            updatedTime: 1607669217000,
             order: 1,
             nav: {
               order: 2,
@@ -219,6 +219,53 @@ export function getRoutes() {
           title: 'API',
         },
         {
+          path: '/guide/best-practice',
+          component: dynamic({
+            loader: () =>
+              import(
+                /* webpackChunkName: 'docs__guide__best-practice.md' */ '/Users/ender/learning/github/dobux/docs/guide/best-practice.md'
+              ),
+          }),
+          exact: true,
+          meta: {
+            filePath: 'docs/guide/best-practice.md',
+            updatedTime: 1607062509000,
+            slugs: [
+              {
+                depth: 1,
+                value: '最佳实践',
+                heading: '最佳实践',
+              },
+              {
+                depth: 2,
+                value: '单一 Model',
+                heading: '单一-model',
+              },
+              {
+                depth: 3,
+                value: '组件 + model.ts',
+                heading: '组件--modelts',
+              },
+              {
+                depth: 3,
+                value: '组件 + store.ts + model.ts',
+                heading: '组件--storets--modelts',
+              },
+              {
+                depth: 2,
+                value: '多 Model',
+                heading: '多-model',
+              },
+            ],
+            title: '最佳实践',
+            nav: {
+              path: '/guide',
+              title: 'Guide',
+            },
+          },
+          title: '最佳实践',
+        },
+        {
           path: '/guide/devtools',
           component: dynamic({
             loader: () =>
@@ -229,7 +276,7 @@ export function getRoutes() {
           exact: true,
           meta: {
             filePath: 'docs/guide/devtools.md',
-            updatedTime: 1607600313936,
+            updatedTime: 1607669217000,
             slugs: [
               {
                 depth: 1,
@@ -266,27 +313,37 @@ export function getRoutes() {
             slugs: [
               {
                 depth: 1,
-                value: '例子',
-                heading: '例子',
+                value: '示例',
+                heading: '示例',
               },
               {
-                depth: 3,
+                depth: 2,
                 value: '简单的计数器',
                 heading: '简单的计数器',
               },
               {
                 depth: 3,
+                value: 'React Hooks',
+                heading: 'react-hooks',
+              },
+              {
+                depth: 3,
+                value: 'Class Component',
+                heading: 'class-component',
+              },
+              {
+                depth: 2,
                 value: '待办事项清单',
                 heading: '待办事项清单',
               },
             ],
-            title: '例子',
+            title: '示例',
             nav: {
               path: '/guide',
               title: 'Guide',
             },
           },
-          title: '例子',
+          title: '示例',
         },
         {
           path: '/guide/faq',
@@ -299,7 +356,7 @@ export function getRoutes() {
           exact: true,
           meta: {
             filePath: 'docs/guide/faq.md',
-            updatedTime: 1607062509000,
+            updatedTime: 1607669217000,
             slugs: [
               {
                 depth: 1,
@@ -343,7 +400,7 @@ export function getRoutes() {
           exact: true,
           meta: {
             filePath: 'docs/guide/getting-started.md',
-            updatedTime: 1607073241000,
+            updatedTime: 1607669217000,
             order: 2,
             slugs: [
               {
@@ -358,18 +415,8 @@ export function getRoutes() {
               },
               {
                 depth: 2,
-                value: '目录结构',
-                heading: '目录结构',
-              },
-              {
-                depth: 2,
-                value: '定义模型',
-                heading: '定义模型',
-              },
-              {
-                depth: 2,
-                value: '消费模型',
-                heading: '消费模型',
+                value: '基本使用',
+                heading: '基本使用',
               },
             ],
             title: '快速上手',
@@ -391,7 +438,7 @@ export function getRoutes() {
           exact: true,
           meta: {
             filePath: 'docs/guide/index.md',
-            updatedTime: 1607073241000,
+            updatedTime: 1607669217000,
             order: 1,
             slugs: [
               {
@@ -408,11 +455,6 @@ export function getRoutes() {
                 depth: 2,
                 value: '核心概念',
                 heading: '核心概念',
-              },
-              {
-                depth: 3,
-                value: 'Store',
-                heading: 'store',
               },
               {
                 depth: 3,
@@ -433,6 +475,11 @@ export function getRoutes() {
                 depth: 4,
                 value: 'Effect',
                 heading: 'effect',
+              },
+              {
+                depth: 3,
+                value: 'Store',
+                heading: 'store',
               },
               {
                 depth: 2,

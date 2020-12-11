@@ -34,10 +34,11 @@ $ npm i dobux --save
 $ yarn add dobux
 ```
 
-## 🔨 快速开始
+## 🔨 文档
 
 - [介绍](https://kcfe.github.io/dobux/guide)
 - [快速上手](https://kcfe.github.io/dobux/guide/getting-started)
+- [最佳实践](https://kcfe.github.io/dobux/guide/best-practice)
 
 ## 🔗 示例
 
