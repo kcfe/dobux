@@ -3,7 +3,7 @@ import produce from 'immer'
 import { 
   ConfigReducer, 
   ContextPropsModel, 
-  MapStateToProps, 
+  MapStateToModel, 
   ModelConfig, 
   ModelConfigEffect, 
   ModelContextProps, 
@@ -83,7 +83,7 @@ export class Model<C extends ModelConfig> {
     this.useContext = useContext
   }
 
-  public useModel(mapStateToProps: MapStateToProps<C['state']>): any {
+  public useModel(mapStateToModel: MapStateToModel<C['state']>): any {
     const [, dispatcher] = useState()
     const { model } = this.useContext()
 
@@ -95,8 +95,8 @@ export class Model<C extends ModelConfig> {
     if (!subscriberRef.current) {
       const subscriber = {
         dispatcher,
-        mapStateToProps,
-        prevState: mapStateToProps(this.model.state),
+        mapStateToModel,
+        prevState: mapStateToModel(this.model.state),
       }
 
       subscriberRef.current = subscriber
@@ -141,7 +141,7 @@ export class Model<C extends ModelConfig> {
       '[store.useModel] You should add <Provider></Provider> or withProvider() in the upper layer when calling useModel'
     )
 
-    const state = mapStateToProps(model.state)
+    const state = mapStateToModel(model.state)
 
     return {
       state,

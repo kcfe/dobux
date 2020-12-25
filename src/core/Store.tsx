@@ -3,7 +3,7 @@ import { Model } from './Model'
 import { isObject, isArray, isUndefined, isNull, isFunction } from '../utils/type'
 import { invariant } from '../utils/invariant'
 
-import { Configs, StoreOptions, ModelConfig, StoreProvider, MapStateToProps, Models, HOC } from '../types'
+import { Configs, StoreOptions, ModelConfig, StoreProvider, MapStateToModel, Models, HOC } from '../types'
 
 type StoreModels<C extends Configs> = {
   [K in keyof C]: Model<ModelConfig<C[K]['state']>>
@@ -41,7 +41,7 @@ export class Store<C extends Configs> {
 
   public useModel = <K extends keyof C, S = undefined, R = undefined, E = undefined>(
     modelName: K,
-    mapStateToProps: MapStateToProps<Models<C>[K], S> = (state: S): S => state
+    mapStateToModel: MapStateToModel<Models<C>[K], S> = (state: S): S => state
   ): Models<C, S, R, E>[K] => {
     invariant(!isUndefined(modelName), `[store.useModel] Expected the modelName not to be empty`)
 
@@ -50,21 +50,21 @@ export class Store<C extends Configs> {
     invariant(modelNames.indexOf(modelName as string) > -1, `[store.useModel] Expected the modelName to be one of ${modelNames}, but got ${modelName}`)
 
     invariant(
-      isUndefined(mapStateToProps) || isFunction(mapStateToProps),
-      `[store.useModel] Expected the mapStateToProps to be function or undefined, but got ${typeof mapStateToProps}`
+      isUndefined(mapStateToModel) || isFunction(mapStateToModel),
+      `[store.useModel] Expected the mapStateToModel to be function or undefined, but got ${typeof mapStateToModel}`
     )
 
-    return this.models[modelName].useModel(mapStateToProps)
+    return this.models[modelName].useModel(mapStateToModel)
   }
 
   public withModel = <K extends keyof C, S = undefined>(
     modelName: K,
-    mapStateToProps?: MapStateToProps<Models<C>[K], S>
+    mapStateToModel?: MapStateToModel<Models<C>[K], S>
   ): HOC => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return Component => {
       return (props): React.ReactElement => {
-        const store = this.useModel(modelName, mapStateToProps)
+        const store = this.useModel(modelName, mapStateToModel)
         return <Component {...store} {...props} />
       }
     }

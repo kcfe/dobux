@@ -159,13 +159,13 @@ export type HOC<InjectProps = any> = <P>(
 export type Optionality<T extends K, K> = Omit<T, keyof K>
 
 export interface StateSubscriber<T> {
-  mapStateToProps: MapStateToProps<any>
+  mapStateToModel: MapStateToModel<any>
   prevState: T
   dispatcher: Dispatch<any>
 }
 
 export type EffectSubscriber = Dispatch<any>
 
-export interface MapStateToProps<M extends Model<any>, S = any> {
+export interface MapStateToModel<M extends Model<any>, S = any> {
   (state: M['state']): S
 }

@@ -1,5 +1,5 @@
 export default {
-  // base: '/dobux',
+  base: '/dobux',
   publicPath: '/dobux/',
   locales: [['zh-CN', '中文'], ['en-US', 'English']],
   exportStatic: {},

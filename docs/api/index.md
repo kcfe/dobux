@@ -11,12 +11,12 @@ toc: menu
 
 ## `createModel<RootModel, 'modelName'>()(model)`
 
-创建一个 `Dobux` 模型，它是一个高阶函数，首次执行时没有入参，存在两个范型参数：
+创建一个 `Dobux` 模型，它是一个 **高阶函数**，调用时没有入参，存在两个范型参数：
 
-- `type RootModel`：整个 `store` 的根模型，通过 `dobux` 提供 `Models<models>` 类型导出，[示例代码]()
-- `type modelName: string`：当前模型的名称，是一个 `store` 下会包含多个 `Model` 之一，通常传入当前定义的 `Model`，[示例代码]()
+- `type RootModel`：整个 `store` 的根模型，通过 `dobux` 提供 `Models<models>` 类型导出，[示例代码](guide/examples#简单的计数器)
+- `type modelName: string`：当前模型的名称，是一个 `store` 下会包含多个 `Model` 之一，通常传入当前定义的 `Model`，[示例代码](guide/examples#简单的计数器)
 
-一个 `model` 包含如下三个属性
+执行之后返回一个函数，调用这个函数会创建一个模型，入参为 `model`，包含以下三个属性：
 
 ### model.state
 
@@ -37,9 +37,9 @@ const counter = createModel<RootModel, 'counter'>()({
 
 ### model.reducers
 
-`reducers?: { [string]: (state: State, ...payload: any) => void }`
+`reducers?: { [reducerName: string]: (state, ...payload: any[]) => void }`
 
-模型状态的修改必须通过 `reducer` 进行，非必传。用户调用该函数执行时会默认传入以下参数：
+修改模型状态的同步方法，非必传。当用户调用该函数执行时会默认传入以下参数：
 
 - `state`：当前模型最新的状态，直接修改会生成一个新的对象并触发对应的组件更新
 - `payload`：调用该 `reducer` 时传入的参数，支持传入多个
@@ -67,9 +67,10 @@ const counter = createModel<RootModel, 'counter'>()({
 
 `reducers.setValue(key: K extends keyof State, value: State[K])`
 
-指定字段状态更新
+更新指定的状态
 
-- `key`：需要更新的字段名称，名称属于 `Object.keys(state)` 其中的一个，必传
+- `key`：需要更新的字段名称，属于 `Object.keys(state)` 其中的一个，必传
+- `value`：修改后的值，必传
 
 ```ts
 reducers.setValue('count', 10)
@@ -84,7 +85,7 @@ reducers.setValues('userInfo', {
 
 批量状态更新
 
-- `partialState`：`state` 的部分数据，需要注意的是只能批量更新第一层数据，如果需要更新深层的数据，需要手动合并，非必传
+- `partialState`：对应模型状态的部分数据，需要注意的是内部只会批量更新第一层数据，如果需要更新深层的数据，需要手动合并，非必传
 
 ```ts
 reducers.setValues({
@@ -116,7 +117,7 @@ reducers.reset('count')
 
 ### model.effects
 
-`effects: (model: model, rootModel: RootModel) => { [name: string]: (...payload: any) => Promise<any> }`
+`effects: (model: model, rootModel: RootModel) => { [effectName: string]: (...payload: any) => Promise<any> }`
 
 所有的副作用函数都需要在 `effects` 中处理，调用该函数会默认传入以下参数：
 
@@ -152,15 +153,15 @@ const counter = createModel<RootModel, 'counter'>()({
 
 ## `store = createStore(models, options)`
 
-用于创建一个 `Store` 实例
+用于创建一个 `Dobux` 的 `Store` 实例
 
 - `models`: 通过 [createModel](#createmodelrootmodel-modelnamemodel) 创建的多个 `model` 组成的一个对象，其中对象的 `key` 值为模型的名称，在组件内调用 `useModel(key)` 消费数据时传入
 
-- `options.name?: string`：`Store` 的名称，显示在 [redux devtools](/guide/devtools) 的面板上，非必传，默认为 `dobux/number`
+- `options.name?: string`：`Store` 的名称，显示在 [redux devtools](/guide/devtools) 的面板上，非必传，默认为 `dobux/${number}`
 
-- `options.autoReset?: boolean | keyof models`：组件内部通过 `useModel` 消费数据源时，在组件卸载的时候是否需要自动重置为初始的数据，非必传，默认为 `false`，如果传入 `true` 表示当前 `store` 对应的多个 `model` 都会自动卸载，传入数组可以执行某些 `model` 执行卸载操作
+- `options.autoReset?: boolean | Array<keyof models>`：组件内部通过 `useModel` 消费数据源时，在组件卸载的时候是否需要自动重置为初始的数据，非必传，默认为 `false`，如果传入 `true` 表示当前 `store` 对应的多个 `model` 在组件卸载的时候都会自动卸载数据；如果传入数组可以指定某些 `model` 执行卸载操作
 
-- `options.devtools?: boolean | keyof models`：在开发环境下模型是否支持连接 `redux devtools`，非必传，默认为 `true`，如果传入 `false` 表示当前 `store` 对应的多个 `model` 都不支持连接 `devtools`，传入数组可以指定某些 `model` 不连接 `devtool`
+- `options.devtools?: boolean | Array<keyof models>`：在开发环境下模型是否支持连接 `redux devtools`，非必传，默认为 `true`，如果传入 `false` 表示当前 `store` 下的所有 `model` 都不支持连接 `devtools`，传入数组可以指定某些 `model` 不连接 `devtool`
 
 ```ts
 import { createModel, createStore } from 'dobux'
@@ -194,9 +195,9 @@ const store = createStore({
 
 `Provider(props: { children: React.ReactElement })`
 
-通过 `Provider` 将 `Store` 实例挂载到 `React` 应用，以便组件能够通过 `Hooks` 的方式进行交互
+通过 `Provider` 将 `Store` 实例挂载到 `React` 应用，以便组件能够通过 `Hooks` 的方式获取不同的模型进行交互
 
-- `props.children`：使用 store 的子节点
+- `props.children`：使用 `store` 的子节点
 
 ```tsx | pure
 import React from 'react'
@@ -218,7 +219,7 @@ ReactDOM.render(
 
 `withProvider(React.FunctionComponent): React.ReactElement`
 
-与 `Provider` 的区别时，该组件是一个 **高阶组件**，通过 `useModel` 获取 `store` 实例必须要在 `Provider | withProvider` 的子组件中执行，对于不希望嵌套一层组件的需求就可以使用 `withProvider` 包裹
+作用同 `Provider`，区别是该组件是一个 **高阶组件**，在组件内通过 `useModel` 获取指定的模型必须要在 `Provider | withProvider` 的子组件中执行，对于不希望嵌套一层组件的需求就可以使用 `withProvider` 包裹
 
 ```tsx | pure
 import { Tabs } from 'antd'
@@ -266,18 +267,18 @@ export default withRouter(withProvider(App))
 
 ### `store.useModel`
 
-`useModel: (modelName, mapStateToProps) => { state, reducers, effects }`
+`useModel: (modelName: string, mapStateToModel?: (state: State) => any) => { state, reducers, effects }`
 
 通过该 API 可以在函数组件内获取对应模型的实例，接受两个参数：
 
-- `modelName: string`：执行 `createStore(models)` 时传入的对象 `key` 值 `keyof models`，必传
-- `mapStateToProps?: (state: State) => any`：接受当前模型最新的 `state` 为参数，返回一个自定义的对象，表示当前组件只有在这个返回对象发生改变时才会重新触发组件的渲染，用于性能优化，阻止不必要的渲染，非必传
+- `modelName`：需要消费的模型名称，即执行 `createStore(models)` 时传入对象的 `key` 值 `keyof models`，必传
+- `mapStateToModel`：返回一个自定义的对象作为组件真实的消费模型 `state`，表示当前组件只有在这个返回对象发生改变时才会重新触发组件的渲染，用于性能优化，阻止不必要的渲染，入参为当前模型最新的 `state`，非必传
 
 返回结果的信息如下：
 
-- `state`：当前组件依赖模型对应的状态
+- `state`：当前消费的模型对应的最新状态
 - `reducers`：当前组件可用于修改模型状态的方法
-- `effects`：当前组件可用于执行副作用的方法，比如调用异步请求，其中 `effects.effectName.loading` 记录了异步操作时的状态，可以简化视图层逻辑
+- `effects`：当前组件可用于执行副作用的方法，其中 `effects.effectName.loading` 记录了异步操作时的状态，可以简化视图层逻辑
 
 #### 基本用法
 
@@ -298,7 +299,7 @@ const Counter: React.FC = () => {
 
 #### 性能优化
 
-在某些组件中可能只需要依赖某一数据源的部分状态，同时只有当这部分依赖的状态变化时才会重新渲染，可以通过 `useModel` 第二个参数的 `mapStateToProps` 属性进行控制
+在某些组件中可能只需要依赖某一数据源的部分状态，同时只有当这部分依赖的状态变化时才会重新渲染，可以通过 `useModel` 第二个参数的 `mapStateToModel` 属性进行控制
 
 ```tsx | pure
 import React, { FC } from 'react'
@@ -323,18 +324,18 @@ const Counter: FC = () => {
 
 ### `store.withModel`
 
-`withModel: (modelName, mapStateToProps) => (Component) => React.ComponentType`
+`withModel: (modelName: string, mapStateToModel?: (state: State) => any) => Component => React.ComponentType`
 
 对于 Class Component 可以通过 `withModel` 高阶组件进行模型的消费，该组件接受两个参数：
 
-- `modelName: string`：执行 `createStore(models)` 时传入的对象 `key` 值 `keyof models`，必传
-- `mapStateToProps?: (state: State) => any`：接受当前模型最新的 `state` 为参数，返回一个自定义的对象，表示当前组件只有在这个返回对象发生改变时才会重新触发组件的渲染，用于性能优化，阻止不必要的渲染，非必传
+- `modelName`：需要消费的模型名称，即执行 `createStore(models)` 时传入对象的 `key` 值 `keyof models`，必传
+- `mapStateToModel`：返回一个自定义的对象作为组件真实的消费模型 `state`，表示当前组件只有在这个返回对象发生改变时才会重新触发组件的渲染，用于性能优化，阻止不必要的渲染，入参为当前模型最新的 `state`，非必传
 
-调用该高阶组件会在传入组件的 `props` 上挂载以下三个属性：
+调用该高阶组件会在被包裹组件的 `props` 上挂载以下三个属性：
 
-- `props.state`：当前组件依赖模型对应的状态
+- `props.state`：当前消费的模型对应的最新状态
 - `props.reducers`：当前组件可用于修改模型状态的方法
-- `props.effects`：当前组件可用于执行副作用的方法，比如调用异步请求，其中 `effects.effectName.loading` 记录了异步操作时的状态，可以简化视图层逻辑
+- `props.effects`：当前组件可用于执行副作用的方法，其中 `effects.effectName.loading` 记录了异步操作时的状态，可以简化视图层逻辑
 
 #### 基本用法
 
@@ -388,7 +389,7 @@ export default withModel('counter')(Counter)
 
 #### 性能优化
 
-在某些组件中可能只需要依赖某一数据源的部分状态，同时只有当这部分依赖的状态变化时才会重新渲染，可以通过 `withModel` 第二个参数的 `mapStateToProps` 属性进行控制
+在某些组件中可能只需要依赖某一数据源的部分状态，同时只有当这部分依赖的状态变化时才会重新渲染，可以通过 `withModel` 第二个参数的 `mapStateToModel` 属性进行控制
 
 ```tsx | pure
 import store, { RootModel } from './store'

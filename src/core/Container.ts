@@ -29,9 +29,9 @@ export class Container<T> {
   public notify(payload?: T): void {
     if (payload) {
       for (let i = 0; i < this.stateSubscribers.length; i++) {
-        const { dispatcher, mapStateToProps, prevState } = this.stateSubscribers[i]
+        const { dispatcher, mapStateToModel, prevState } = this.stateSubscribers[i]
 
-        const newState = mapStateToProps(payload)
+        const newState = mapStateToModel(payload)
 
         this.stateSubscribers[i].prevState = newState
 
