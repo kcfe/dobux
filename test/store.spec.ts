@@ -28,6 +28,7 @@ describe('Store test', () => {
     expect(methods).toContain('withProvider')
     expect(methods).toContain('useModel')
     expect(methods).toContain('withModel')
+    expect(methods).toContain('getState')
   })
 
   it('state can be primitive value', () => {
@@ -36,7 +37,7 @@ describe('Store test', () => {
         counter: {
           state: 1,
           reducers: {
-            increase(state) {
+            increase() {
               return 2
             },
           },
@@ -63,7 +64,7 @@ describe('Store test', () => {
         counter: {
           state: [1, 2, 3],
           reducers: {
-            increase(state) {
+            increase() {
               return 2
             },
           },

@@ -76,10 +76,13 @@ export class Store<C extends Configs> {
   public getState<K extends keyof C>(modelName: K): C[K]['state']
   public getState<K extends keyof C>(modelName?: K) {
     if (modelName) {
+      const modelNames = Object.keys(this.configs)
+      invariant(modelNames.indexOf(modelName as string) > -1, `[store.getState] Expected the modelName to be one of ${modelNames}, but got ${modelName}`)
+
       return this.rootModel[modelName].state
     } else {
       const state = Object.keys(this.rootModel).reduce((state, modelName) => {
-        state[modelName] = this.rootModel[modelName]
+        state[modelName] = this.rootModel[modelName].state
         return state
       }, Object.create(null))
 
