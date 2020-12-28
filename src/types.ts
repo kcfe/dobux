@@ -112,6 +112,9 @@ export type Models<C extends Configs, S = undefined, R = undefined, E = undefine
   }
 }
 
+export type ModelState<C extends Configs> = {
+  [K in keyof C]: C[K]['state']
+}
 export interface ModelConfig<S = any> {
   state: S
   reducers: ConfigReducers<S>

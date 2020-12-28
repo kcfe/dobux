@@ -1,4 +1,4 @@
-<p align="center"><a href="https://github.com/kcfe/dobux/" target="_blank" rel="noopener noreferrer"><img width="100" src="https://static.yximgs.com/udata/pkg/ks-ad-fe/kcfe/dobux-simple-logo.png" alt="Dobux logo"></a></p>
+<p align="center"><a href="https://kcfe.github.io/dobux/" target="_blank" rel="noopener noreferrer"><img width="100" src="https://static.yximgs.com/udata/pkg/ks-ad-fe/kcfe/dobux-simple-logo.png" alt="Dobux logo"></a></p>
 
 <h1 align="center">Dobux</h1>
 

@@ -3,7 +3,7 @@ import { Model } from './Model'
 import { isObject, isArray, isUndefined, isNull, isFunction } from '../utils/type'
 import { invariant } from '../utils/invariant'
 
-import { Configs, StoreOptions, ModelConfig, StoreProvider, MapStateToModel, Models, HOC } from '../types'
+import { Configs, StoreOptions, ModelConfig, StoreProvider, MapStateToModel, Models, ModelState, HOC } from '../types'
 
 type StoreModels<C extends Configs> = {
   [K in keyof C]: Model<ModelConfig<C[K]['state']>>
@@ -11,9 +11,11 @@ type StoreModels<C extends Configs> = {
 
 export class Store<C extends Configs> {
   private models: StoreModels<C>
+  private rootModel = Object.create(null)
   
   constructor(private configs: C, options: Required<StoreOptions<C>>) {    
     this.models = this.initModels(configs, options)
+    this.getState = this.getState.bind(this)
   }
 
   public Provider: StoreProvider = ({ children }): React.ReactElement => {
@@ -70,9 +72,23 @@ export class Store<C extends Configs> {
     }
   }
 
+  public getState(): ModelState<C>
+  public getState<K extends keyof C>(modelName: K): C[K]['state']
+  public getState<K extends keyof C>(modelName?: K) {
+    if (modelName) {
+      return this.rootModel[modelName].state
+    } else {
+      const state = Object.keys(this.rootModel).reduce((state, modelName) => {
+        state[modelName] = this.rootModel[modelName]
+        return state
+      }, Object.create(null))
+
+      return state
+    }
+  }
+
   private initModels(configs: C, options: Required<StoreOptions<C>>): StoreModels<C> {
     const { name: storeName, autoReset, devtools } = options
-    const rootModel = Object.create(null)
     const modelNames = Object.keys(configs)
 
     invariant(modelNames.length > 0, `createStore requires at least one configuration`)
@@ -89,13 +105,13 @@ export class Store<C extends Configs> {
 
       config.state = isObject(state) ? { ...state } : isArray(state) ? [...state] : state
       config.reducers =  { ...reducers }
-      config.effects = effects(config, rootModel)
+      config.effects = effects(config, this.rootModel)
         
       models[name] = new Model({
         storeName,
         name,
         config,
-        rootModel,
+        rootModel: this.rootModel,
         autoReset: isArray(autoReset) ? (autoReset as any[]).indexOf(name) > -1 : autoReset,
         devtools: isArray(devtools) ? (devtools as any[]).indexOf(name) > -1 : devtools,
       })
