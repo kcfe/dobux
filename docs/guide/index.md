@@ -18,9 +18,9 @@ order: 1
 
 ### Model
 
-对于 `React` 这种组件化的开发方式，一个页面通常会抽象为多个组件，每个组件可能会维护多个内部状态用于控制组件的表现行为。在组件内部还会存在一些副作用的调用，最常见的就是 `Ajax` 请求。我们将这一组内部状态、用于修改内部状态的方法以及副作用函数的组合称为 **Model（模型）**
+对于 `React` 这种组件化的开发方式，一个页面通常会抽象为多个组件，每个组件可能会维护多个内部状态用于控制组件的表现行为。在组件内部还会存在一些副作用的调用，最常见的就是 `Ajax` 请求。在 `Dobux` 中我们将这一组内部状态、用于修改内部状态的方法以及副作用处理函数的组合称为 **Model（模型）**
 
-在 `Dobux` 中 `Model` 是最基本的单元，每个 `Model` 会包含以下三个部分：
+在 `Dobux` 中 `Model` 是最基本的单元，下面分别介绍了 `Model` 的三个组成部分：
 
 #### State
 
@@ -42,12 +42,12 @@ const counter = createModel()({
 
 `type Reducer<S, P> = (state: S, ...payload: P) => void`
 
-在 `Dobux` 中所有模型状态的改变都必须通过 `Reducer`，它是一个同步执行的函数，接受多个参数
+在 `Dobux` 中所有模型状态的改变都必须通过 `Reducer`，它是一个同步执行的函数，在调用时会传入以下几个参数：
 
 - `state`：当前模型的最新状态
 - `...payload: any[]`：调用方传入的多个参数
 
-在 `Reducer` 中可以通过简单地修改数据就能更新状态并刷新组件视图，同时生成不可变数据源，保证依赖的正确性
+  **响应式** 体现在对于每一个 `Reducer` 在函数体中可以通过简单地修改数据就能更新状态并刷新组件视图，同时生成不可变数据源，保证依赖的正确性
 
 ```ts
 import { createModel } from 'dobux'
@@ -64,11 +64,12 @@ const counter = createModel()({
 })
 ```
 
-`Dobux` 内置了名为 `setValue`、`setValues` 和 `reset` 的 `Reducer`，可以简化状态修改逻辑
+为了简化状态修改逻辑同时避免用户重复的编写常用 `reducer` 的类型约束，`Dobux` 内置了名为 `setValue`、`setValues` 和 `reset` 的 `Reducer`
 
 ```ts
 // modify state specially
 reducers.setValue('count', 10)
+
 // batched modify state
 reducers.setValues({
   count: 10,
@@ -84,9 +85,9 @@ reducers.reset('count')
 
 `type Effect<P> = (...payload: P) => Promise<void>`
 
-`Effect` 被称为副作用，在我们的应用中，最常见的就是异步操作。它来自于函数编程的概念，之所以叫副作用是因为它使得我们的函数变得不纯，同样的输入不一定获得同样的输出
+`Effect` 被称为副作用，它来自于函数编程的概念，之所以叫副作用是因为它使得我们的函数变得不纯，同样的输入不一定获得同样的输出
 
-在 `Dobux` 中副作用处理通过调用 `Effect` 执行，通常会在副作用中发送异步请求或者调用其他模型
+在 `Dobux` 中副作用处理通过调用 `Effect` 执行，通常会在副作用中发送异步请求或者调用其他模型（通过 `rootModel` 可以调用其他模型）
 
 ```ts
 import { createModel } from 'dobux'
@@ -146,7 +147,7 @@ const Counter: React.FC = () => {
 
 在 `Dobux` 中 `Model` 不能独立的完成状态的管理和共享。`Store` 作为 `Model` 的载体可以赋予它这部分的能力。每一个 `Store` 都会包含一个或多个 `Model`，同一个 `Store` 下的一组 `Model` 之间是相互独立、互不干扰的
 
-一个应用可以创建多个 `Store`，它们之间也是是相互独立、互不干扰的
+一个应用可以创建多个 `Store`（全局和局部数据源），它们之间也是相互独立、互不干扰的
 
 ```ts
 import { createModel, createStore } from 'dobux'

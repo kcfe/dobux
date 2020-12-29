@@ -13,14 +13,12 @@ toc: menu
 
 创建一个 `Dobux` 模型，它是一个 **高阶函数**，调用时没有入参，存在两个范型参数：
 
-- `type RootModel`：整个 `store` 的根模型，通过 `dobux` 提供 `Models<models>` 类型导出，[示例代码](guide/examples#简单的计数器)
-- `type modelName: string`：当前模型的名称，是一个 `store` 下会包含多个 `Model` 之一，通常传入当前定义的 `Model`，[示例代码](guide/examples#简单的计数器)
+- `type RootModel`：整个 `store` 的根模型，通过 `dobux` 提供的 `Models<models>` 类型推导出，[示例代码](/guide/examples#简单的计数器)
+- `type modelName: string`：当前模型的名称，是一个 `store` 下会包含多个 `Model` 之一，通常传入当前定义的 `Model`，[示例代码](/guide/examples#简单的计数器)
 
 执行之后返回一个函数，调用这个函数会创建一个模型，入参为 `model`，包含以下三个属性：
 
-### model.state
-
-`state: any`
+### `model.state: any`
 
 当前模型的初始状态，通常为一个 JavaScript 对象，必传
 
@@ -35,11 +33,9 @@ const counter = createModel<RootModel, 'counter'>()({
 })
 ```
 
-### model.reducers
+### `model.reducers?: { [reducerName: string]: (state, ...payload: any[]) => void }`
 
-`reducers?: { [reducerName: string]: (state, ...payload: any[]) => void }`
-
-修改模型状态的同步方法，非必传。当用户调用该函数执行时会默认传入以下参数：
+修改模型状态的同步方法，非必传。当用户执行该函数时会默认传入以下参数：
 
 - `state`：当前模型最新的状态，直接修改会生成一个新的对象并触发对应的组件更新
 - `payload`：调用该 `reducer` 时传入的参数，支持传入多个
@@ -111,22 +107,20 @@ reducers.setValues({
 // reset total state
 reducers.reset()
 
-// reset specify state
+// reset specific state
 reducers.reset('count')
 ```
 
-### model.effects
+### `model.effects?: (model: Model, rootModel: RootModel) => { [effectName: string]: (...payload: any) => Promise<any> }`
 
-`effects: (model: model, rootModel: RootModel) => { [effectName: string]: (...payload: any) => Promise<any> }`
-
-所有的副作用函数都需要在 `effects` 中处理，调用该函数会默认传入以下参数：
+所有的副作用函数都需要在 `effects` 中处理，非必传，当用户执行该函数时会默认传入以下参数：
 
 - `model`：当前模型实例
-  - `model.state`
-  - `model.reducers`
-  - `model.effects`
-- `rootModel`：整个 `store` 的根模型实例，保存了整个 `store` 下所有的 `model`
-  - `{ [modelName: string]: { state, reducers, effects } }`
+  - `model.state`：当前模型的状态
+  - `model.reducers`：当前组件可用于修改模型状态的方法
+  - `model.effects`：当前组件可用于执行副作用的方法
+- `rootModel`：整个 `store` 的根模型实例，保存了同一个 `store` 下所有的 `model`，可以通过这个对象操作其他的模型，[查看示例](/guide/examples#待办事项清单)
+  - `{ [modelName: string]: Model }`
 - `payload`：调用该 `effect` 时传入的参数，支持传入多个
 
 ```ts
@@ -157,7 +151,7 @@ const counter = createModel<RootModel, 'counter'>()({
 
 - `models`: 通过 [createModel](#createmodelrootmodel-modelnamemodel) 创建的多个 `model` 组成的一个对象，其中对象的 `key` 值为模型的名称，在组件内调用 `useModel(key)` 消费数据时传入
 
-- `options.name?: string`：`Store` 的名称，显示在 [redux devtools](/guide/devtools) 的面板上，非必传，默认为 `dobux/${number}`
+- `options.name?: string`：指定 `store` 的名称，该名称会显示在 [redux devtools](/guide/devtools) 的面板上，非必传，默认为 `dobux/${number}`
 
 - `options.autoReset?: boolean | Array<keyof models>`：组件内部通过 `useModel` 消费数据源时，在组件卸载的时候是否需要自动重置为初始的数据，非必传，默认为 `false`，如果传入 `true` 表示当前 `store` 对应的多个 `model` 在组件卸载的时候都会自动卸载数据；如果传入数组可以指定某些 `model` 执行卸载操作
 
@@ -191,13 +185,11 @@ const store = createStore({
 })
 ```
 
-### `store.Provider`
-
-`Provider(props: { children: React.ReactElement })`
+### `store.Provider: (props: { children: React.ReactElement }) => React.ReactElement`
 
 通过 `Provider` 将 `Store` 实例挂载到 `React` 应用，以便组件能够通过 `Hooks` 的方式获取不同的模型进行交互
 
-- `props.children`：使用 `store` 的子节点
+- `props.children`：需要消费 `store` 的子节点
 
 ```tsx | pure
 import React from 'react'
@@ -215,9 +207,7 @@ ReactDOM.render(
 )
 ```
 
-### `store.withProvider`
-
-`withProvider(React.FunctionComponent): React.ReactElement`
+### `store.withProvider: (component: React.FunctionComponent) => React.ReactElement`
 
 作用同 `Provider`，区别是该组件是一个 **高阶组件**，在组件内通过 `useModel` 获取指定的模型必须要在 `Provider | withProvider` 的子组件中执行，对于不希望嵌套一层组件的需求就可以使用 `withProvider` 包裹
 
@@ -265,9 +255,7 @@ function App(props: Props) {
 export default withRouter(withProvider(App))
 ```
 
-### `store.useModel`
-
-`useModel: (modelName: string, mapStateToModel?: (state: State) => any) => { state, reducers, effects }`
+### `store.useModel: (modelName: string, mapStateToModel?: (state: State) => any) => { state, reducers, effects }`
 
 通过该 API 可以在函数组件内获取对应模型的实例，接受两个参数：
 
@@ -276,9 +264,9 @@ export default withRouter(withProvider(App))
 
 返回结果的信息如下：
 
-- `state`：当前消费的模型对应的最新状态
+- `state`：当前消费模型对应的最新状态
 - `reducers`：当前组件可用于修改模型状态的方法
-- `effects`：当前组件可用于执行副作用的方法，其中 `effects.effectName.loading` 记录了异步操作时的状态，可以简化视图层逻辑
+- `effects`：当前组件可用于执行副作用的方法；其中 `effects.effectName.loading` 记录了异步操作时的状态，当执行 `effects.effectName` 时会将 `effects.effectName.loading` 设置为 `true`，当对应的副作用执行完成后会将 `effects.effectName.loading` 重置为 `false`。在视图中不再需要自己定义多个 `loading` 状态，通过该属性就简化视图层逻辑
 
 #### 基本用法
 
@@ -289,6 +277,7 @@ import store from './store'
 const Counter: React.FC = () => {
   const { state, reducers, effects } = store.useModel('counter')
 
+  // 当异步请求 increaseAsync 执行时 loading 会设置为 true，显示 loading
   if (effects.increaseAsync.loading) {
     return <div>loading ...</div>
   }
@@ -307,7 +296,7 @@ import store from './store'
 
 const Counter: FC = () => {
   const { state, reducers, effects } = store.useModel('counter', state => {
-      // 只有当数据源 `counter` 中的 `state.count` 改变时才会触发当前组件的 re-render
+      // 只有当数据源 `counter` 中的 `state.count` 改变时才会触发当前组件的 rerender
       return {
         count: state.count,
       }
@@ -322,9 +311,7 @@ const Counter: FC = () => {
 }
 ```
 
-### `store.withModel`
-
-`withModel: (modelName: string, mapStateToModel?: (state: State) => any) => Component => React.ComponentType`
+### `store.withModel: (modelName: string, mapStateToModel?: (state: State) => any) => (Component: React.ComponentType) => React.ComponentType`
 
 对于 Class Component 可以通过 `withModel` 高阶组件进行模型的消费，该组件接受两个参数：
 
@@ -442,4 +429,23 @@ export default withModel('counter', state => {
     count: state.count,
   }
 })(Count)
+```
+
+### `store.getState: (modelName?: string) => ModelState`
+
+获取指定（所有）模型的最新状态 `state`，可以在组件外部使用。可以解决在闭包中获取最新的状态值或者想要只使用状态而不订阅更新的场景
+
+- `modelName`：模型名称，非必传，如果传入会返回对应模型的 `state`，如果没传入会返回整个 `store` 对应的多个模型的 `state`
+
+```tsx | pure
+import { getState } from './store'
+
+const rootState = getState()
+// { header: { value: ''}, undoList: { items: [{ content: 'Learn dobux' }] } }
+
+const headerState = getState('header')
+// { value: ''}
+
+const undoListState = getState('header')
+// { items: [{ content: 'Learn dobux' }] }
 ```
