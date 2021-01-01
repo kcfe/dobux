@@ -1,6 +1,6 @@
 {
   "name": "dobux",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "轻量级的响应式状态管理方案",
   "files": [
     "cjs",
