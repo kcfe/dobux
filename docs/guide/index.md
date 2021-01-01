@@ -4,7 +4,7 @@ order: 1
 
 # 介绍
 
-`Dobux`：轻量级 **响应式** 状态管理方案
+`Dobux` 是基于 React Context 和 React Hooks 的轻量级响应式状态管理方案轻量级
 
 ## 特性
 
@@ -179,5 +179,5 @@ const store = createStore({
 数据的改变发生通常是通过用户交互行为触发的，当此类行为触发需要对模型状态修改的时候可以直接调用 `Reducers` 改变 `State` ，如果需要执行副作用（比如异步请求）则需要先调用 `Effects`，执行完副作用后再调用 `Reducers` 改变 `State`
 
 <div style="text-align: center">
-  <img width="800px" src="/dobux-flow.png" />
+  <img width="800px" src="/dobux/dobux-flow.png" />
 </div>

@@ -9,14 +9,14 @@ export default {
   },
   mode: 'site',
   title: 'Dobux',
-  favicon: '/simple-logo.png',
-  logo: '/logo.png',
+  favicon: '/dobux/simple-logo.png',
+  logo: '/dobux/logo.png',
   dynamicImport: {},
   manifest: {},
   hash: true,
   links: [
-    { rel: 'manifest', href: '/asset-manifest.json' },
-    { rel: 'stylesheet', href: '/style.css' },
+    { rel: 'manifest', href: '/dobux/asset-manifest.json' },
+    { rel: 'stylesheet', href: '/dobux/style.css' },
   ],
   navs: [
     { title: '指南', path: '/guide' },

@@ -13,8 +13,8 @@ toc: menu
 
 创建一个 `Dobux` 模型，它是一个 **高阶函数**，调用时没有入参，存在两个范型参数：
 
-- `type RootModel`：整个 `store` 的根模型，通过 `dobux` 提供的 `Models<models>` 类型推导出，[示例代码](https://github.com/kcfe/dobux/blob/main/docs/demos/hooks/index.tsx#L7)
-- `type modelName: string`：当前模型的名称，是一个 `store` 下会包含多个 `Model` 之一，通常传入当前定义的 `Model`，[示例代码](https://github.com/kcfe/dobux/blob/main/docs/demos/hooks/model.ts#L10)
+- `type RootModel`：整个 `store` 的根模型，通过 `dobux` 提供的 `Models<models>` 类型推导出，[示例代码](https://github.com/kcfe/dobux/blob/main/docs/demos/counter/hooks/index.tsx#L7)
+- `type modelName: string`：当前模型的名称，是一个 `store` 下会包含多个 `Model` 之一，通常传入当前定义的 `Model`，[示例代码](https://github.com/kcfe/dobux/blob/main/docs/demos/counter/hooks/model.ts#L10)
 
 执行之后返回一个函数，调用这个函数会创建一个模型，入参为 `model`，包含以下三个属性：
 
