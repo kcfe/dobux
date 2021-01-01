@@ -4,7 +4,7 @@ order: 1
 
 # 介绍
 
-`Dobux` 是基于 React Context 和 React Hooks 的轻量级响应式状态管理方案轻量级
+`Dobux` 是基于 React Context 和 React Hooks 的 **轻量级响应式** 状态管理方案
 
 ## 特性
 

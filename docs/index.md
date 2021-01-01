@@ -3,7 +3,7 @@ title: Dobux - React State Management Library
 # https://d.umijs.org/zh-CN/config/frontmatter#hero
 hero:
   title: Dobux
-  desc: 轻量级响应式数据流框架
+  desc: 🍃 轻量级响应式状态管理方案
   actions:
     - text: 快速上手
       link: /guide/getting-started

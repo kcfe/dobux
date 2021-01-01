@@ -56,7 +56,7 @@ async function release() {
   await exec(`git tag ${tag}`)
 
   logger.step(`git push`)
-  await exec('git push origin main --tags')
+  await exec('git push origin master --tags')
 
   logger.step(`publish package ${name}`)
   await publishToNpm(nextVersion)

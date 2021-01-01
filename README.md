@@ -5,8 +5,8 @@
 <p align="center">
   基于 React Context 和 React Hooks 的轻量级响应式状态管理方案
   <br><br>
-  <a href="https://travis-ci.com/kcfe/dobux"><img src="https://travis-ci.com/kcfe/dobux.svg?branch=main" alt="Build Status"></a>
-  <a href="https://codecov.io/gh/kcfe/dobux"><img src="https://codecov.io/gh/kcfe/dobux/branch/main/graph/badge.svg" alt="Coverage Status"></a>
+  <a href="https://travis-ci.com/kcfe/dobux"><img src="https://travis-ci.com/kcfe/dobux.svg?branch=master" alt="Build Status"></a>
+  <a href="https://codecov.io/gh/kcfe/dobux"><img src="https://codecov.io/gh/kcfe/dobux/branch/master/graph/badge.svg" alt="Coverage Status"></a>
   <a href="https://www.npmjs.com/package/dobux"><img src="https://img.shields.io/npm/v/dobux" alt="Version"></a>
   <a href="https://www.npmjs.com/package/dobux"><img src="https://img.shields.io/npm/dm/dobux" alt="Downloads"></a>
   <a href="https://img.shields.io/bundlephobia/minzip/dobux"><img src="https://img.shields.io/bundlephobia/minzip/dobux" alt="Bundle Size"></a>
@@ -53,4 +53,4 @@ $ yarn add dobux
 
 ## 📄 LICENSE
 
-[MIT](https://github.com/kcfe/dobux/blob/main/LICENSE)
+[MIT](https://github.com/kcfe/dobux/blob/master/LICENSE)
