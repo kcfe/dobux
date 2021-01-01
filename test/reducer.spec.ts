@@ -34,7 +34,7 @@ describe('reducer test', () => {
     })
     const { Provider, useModel } = store
 
-    const { result } = createHook(Provider, useModel, 'counter', state => {
+    const { result } = createHook(Provider, useModel, 'counter', (state: any) => {
       return {
         count: state.count,
       }
