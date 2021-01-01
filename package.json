@@ -36,16 +36,12 @@
     "url": "https://github.com/kwai-efe/dobux"
   },
   "keywords": [
+    "dobux",
     "react",
-    "typescript",
-    "runtime",
     "hooks",
-    "context",
-    "state",
-    "reducer",
-    "effect",
-    "immutable",
-    "dobux"
+    "typescript",
+    "state-management",
+    "immutable"
   ],
   "husky": {
     "hooks": {

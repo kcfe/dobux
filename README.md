@@ -3,7 +3,7 @@
 <h1 align="center">Dobux</h1>
 
 <p align="center">
-  轻量级响应式状态管理方案
+  🍃 轻量级响应式状态管理方案
   <br><br>
   <a href="https://travis-ci.com/kcfe/dobux"><img src="https://travis-ci.com/kcfe/dobux.svg?branch=main" alt="Build Status"></a>
   <a href="https://codecov.io/gh/kcfe/dobux"><img src="https://codecov.io/gh/kcfe/dobux/branch/main/graph/badge.svg" alt="Coverage Status"></a>
@@ -39,6 +39,7 @@ $ yarn add dobux
 - [介绍](https://kcfe.github.io/dobux/guide)
 - [快速上手](https://kcfe.github.io/dobux/guide/getting-started)
 - [最佳实践](https://kcfe.github.io/dobux/guide/best-practice)
+- [API](https://kcfe.github.io/dobux/api)
 
 ## 🔗 示例
 
