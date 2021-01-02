@@ -1,5 +1,11 @@
 # Change Log 
 
+## [1.0.1](https://github.com/kcfe/dobux/compare/v1.0.0...v1.0.1) (2021-01-02)
+
+
+
+ 
+
 # [1.0.0](https://github.com/kwai-efe/dobux/compare/v0.0.1...v1.0.0) (2021-01-01)
 
 
