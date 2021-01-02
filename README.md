@@ -1,8 +1,8 @@
-<p align="center" style="margin-left: -5px"><a href="https://kcfe.github.io/dobux/" target="_blank" rel="noopener noreferrer"><img width="100" src="https://static.yximgs.com/udata/pkg/ks-ad-fe/kcfe/dobux-simple-logo.png" alt="Dobux logo"></a></p>
+<p align="center" style="text-align: center; margin-left: -5px"><a href="https://kcfe.github.io/dobux/" target="_blank" rel="noopener noreferrer"><img width="100" src="https://static.yximgs.com/udata/pkg/ks-ad-fe/kcfe/dobux-simple-logo.png" alt="Dobux logo"></a></p>
 
-<h2 align="center">Dobux</h2>
+<h2 align="center" style="text-align: center">Dobux</h2>
 
-<p align="center">
+<p align="center" style="text-align: center">
   基于 React Context 和 React Hooks 的轻量级响应式状态管理方案
   <br><br>
   <a href="https://travis-ci.com/kcfe/dobux"><img src="https://travis-ci.com/kcfe/dobux.svg?branch=master" alt="Build Status"></a>
