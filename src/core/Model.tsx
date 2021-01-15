@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, Dispatch } from 'react'
+import { unstable_batchedUpdates as batchedUpdates} from 'react-dom'
 import produce from 'immer'
 import { 
   ConfigReducer, 
@@ -170,7 +171,7 @@ export class Model<C extends ModelConfig> {
       this.devtoolInstance.send(`${this.options.name}/${name}`, state)
     }
 
-    this.container.notify(state)
+    batchedUpdates(this.container.notify.bind(this.container, state))
   }
 
   private getReducers(config: C): ContextPropsModel<C>['reducers'] {
