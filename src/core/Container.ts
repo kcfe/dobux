@@ -49,12 +49,12 @@ export class Container<T> {
 
   public unsubscribe(type: 'state', payload: StateSubscriber<T>): void
   public unsubscribe(type: 'effect', payload: EffectSubscriber): void
-  public unsubscribe(type: SubscribeType, payload: StateSubscriber<T> | EffectSubscriber): void {
+  public unsubscribe(type: any, payload: any): void {
     if (type === 'state') {
-      const index = this.stateSubscribers.indexOf(payload as StateSubscriber<T>)
+      const index = this.stateSubscribers.indexOf(payload)
       this.stateSubscribers.splice(index, 1)
     } /* istanbul ignore else */ else if (type === 'effect') {
-      const index = this.effectSubscribers.indexOf(payload as EffectSubscriber)
+      const index = this.effectSubscribers.indexOf(payload)
       this.effectSubscribers.splice(index, 1)
     }
   }
