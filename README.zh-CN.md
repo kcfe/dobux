@@ -3,7 +3,7 @@
 <h2 align="center" style="text-align: center">Dobux</h2>
 
 <p align="center" style="text-align: center">
-  Lightweight responsive state management solution based on React Context and React Hooks
+  基于 React Context 和 React Hooks 的轻量级响应式状态管理方案
   <br><br>
   <a href="https://travis-ci.com/kcfe/dobux"><img src="https://travis-ci.com/kcfe/dobux.svg?branch=master" alt="Build Status"></a>
   <a href="https://codecov.io/gh/kcfe/dobux"><img src="https://codecov.io/gh/kcfe/dobux/branch/master/graph/badge.svg" alt="Coverage Status"></a>
@@ -16,40 +16,40 @@
   <img src="https://img.shields.io/npm/dependency-version/dobux/peer/react-dom" alt="Peer React Dom">
 </p>
 
-English | [简体中文](./README.zh-CN.md)
+[English](./README.md) | 简体中文
 
-## ✨ Features
+## ✨ 特性
 
-- **🎉 Simplify**：Only 3 core APIs, no additional learning cost, easy to get started with the knowledge of `React Hooks`.
-- **🚀 Immutable**：Interact with view by simply modifying it while keeping all the benefits of immutable data.
-- **🌲 Flexible Usage**：Support global and local data sources, manage the state of the entire application more elegantly.
-- **🍳 Friendly Asynchronous Processing**：Record the loading status of asynchronous operations, simplify the presentation logic in the view layer.
-- **🍬 TypeScript Support**：Complete `TypeScript` type definition, complete type checking and type inference can be obtained in the editor.
+- **🎉 简单易用**：仅有 3 个核心 API，无需额外的学习成本，只需要了解 `React Hooks`
+- **🚀 不可变数据**：通过简单地修改数据与视图交互，同时保留不可变数据的特性
+- **🌲 灵活的使用方式**：支持全局和局部数据源，更优雅的管理整个应用的状态
+- **🍳 友好的异步处理**：记录异步操作的加载状态，简化了视图层中的呈现逻辑
+- **🍬 TypeScript 支持**：完整的 `TypeScript` 类型定义，在编辑器中能获得完整的类型检查和类型推断
 
-## 📦 Installation
+## 📦 安装
 
 ```bash
-// use npm
+// 使用 npm
 $ npm i dobux --save
 
-// use yarn
+// 使用 yarn
 $ yarn add dobux
 ```
 
-## 🔨 Documents
+## 🔨 文档
 
-- [Introduction](https://kcfe.github.io/dobux/guide)
-- [Get Started](https://kcfe.github.io/dobux/guide/getting-started)
-- [Best Practices](https://kcfe.github.io/dobux/guide/best-practice)
+- [介绍](https://kcfe.github.io/dobux/guide)
+- [快速上手](https://kcfe.github.io/dobux/guide/getting-started)
+- [最佳实践](https://kcfe.github.io/dobux/guide/best-practice)
 - [API](https://kcfe.github.io/dobux/api)
 - [FAQ](https://kcfe.github.io/dobux/guide/faq)
 
-## 🔗 Examples
+## 🔗 示例
 
-- [Simple counter](https://kcfe.github.io/dobux/guide/examples#简单的计数器)
-- [Todo List](https://kcfe.github.io/dobux/guide/examples#待办事项清单)
+- [简单计数器](https://kcfe.github.io/dobux/guide/examples#简单的计数器)
+- [待办事项清单](https://kcfe.github.io/dobux/guide/examples#待办事项清单)
 
-## 🖥 Version dependency
+## 🖥 版本依赖
 
 - React >= 16.8.0
 - ReactDOM >= 16.8.0
