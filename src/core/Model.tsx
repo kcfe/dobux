@@ -12,7 +12,7 @@ import {
   StateSubscriber 
 } from '../types'
 import { invariant } from '../utils/invariant'
-import { isObject } from '../utils/type'
+import { isFunction, isObject } from '../utils/type'
 import { createProvider } from './createProvider'
 import { Container } from './Container'
 import { noop } from '../utils/func'
@@ -125,13 +125,13 @@ export class Model<C extends ModelConfig> {
         this.container.unsubscribe('effect', dispatcher)
 
         /* istanbul ignore next */
-        if (this.unsubscribeDevtool) {
+        if (isFunction(this.unsubscribeDevtool)) {
           Model.instances[this.instanceName]--
 
           // disconnect after all dependent components are destroyed
           if (Model.instances[this.instanceName] <= 0) {
             this.unsubscribeDevtool()
-            devtoolExtension?.disconnect()
+            devtoolExtension?.disconnect?.()
           }
         }
       }
@@ -168,7 +168,7 @@ export class Model<C extends ModelConfig> {
   private notify(name: string, state: C['state']): void {
     /* istanbul ignore next */
     if (this.devtoolInstance) {
-      this.devtoolInstance.send(`${this.options.name}/${name}`, state)
+      this.devtoolInstance.send?.(`${this.options.name}/${name}`, state)
     }
 
     batchedUpdates(this.container.notify.bind(this.container, state))
@@ -316,23 +316,25 @@ export class Model<C extends ModelConfig> {
 
   private initDevtools(): void {
     /* istanbul ignore next */
-    if (devtoolExtension) {
+    if (devtoolExtension && isFunction(devtoolExtension.connect)) {
       // https://github.com/zalmoxisus/redux-devtools-extension/blob/master/docs/API/Arguments.md#name
       this.devtoolInstance = devtoolExtension.connect({
         name: this.instanceName,
       })
 
-      this.unsubscribeDevtool = this.devtoolInstance.subscribe(
-        /* istanbul ignore next */ message => {
-          if (message.type === 'DISPATCH' && message.state) {
-            this.isTimeTravel = true
-            this.model.reducers.setValues(JSON.parse(message.state))
-            this.isTimeTravel = false
+      if (isFunction(this.devtoolInstance?.subscribe) && isFunction(this.devtoolInstance?.init)) {
+        this.unsubscribeDevtool = this.devtoolInstance.subscribe(
+          /* istanbul ignore next */ message => {
+            if (message.type === 'DISPATCH' && message.state) {
+              this.isTimeTravel = true
+              this.model.reducers.setValues(JSON.parse(message.state))
+              this.isTimeTravel = false
+            }
           }
-        }
-      )
-
-      this.devtoolInstance.init(this.initialState)
+        )
+  
+        this.devtoolInstance.init(this.initialState)
+      }
     }
   }
 }
