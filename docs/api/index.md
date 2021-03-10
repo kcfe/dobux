@@ -71,7 +71,7 @@ const counter = createModel<RootModel, 'counter'>()({
 ```ts
 reducers.setValue('count', 10)
 
-reducers.setValues('userInfo', {
+reducers.setValue('userInfo', {
   name: 'dobux',
   age: 1,
 })
@@ -157,6 +157,8 @@ const counter = createModel<RootModel, 'counter'>()({
 
 - `options.devtools?: boolean | Array<keyof models>`：在开发环境下模型是否支持连接 `redux devtools`，非必传，默认为 `true`，如果传入 `false` 表示当前 `store` 下的所有 `model` 都不支持连接 `devtools`，传入数组可以指定某些 `model` 不连接 `devtool`
 
+### 基本使用
+
 ```ts
 import { createModel, createStore } from 'dobux'
 
@@ -182,6 +184,86 @@ const counter = createModel()({
 
 const store = createStore({
   counter,
+})
+```
+
+### 自动重置
+
+```ts
+import { createModel, createStore } from 'dobux'
+
+const counter = createModel()({
+  state: {
+    count: 0,
+  },
+  reducers: {
+    increase(state, payload: number) {
+      state.count += 1
+    },
+    decrease(state, payload: number) {
+      state.count -= 1
+    },
+  },
+  effects: (model, rootModel) => ({
+    async increaseAsync(payload: number) {
+      await wait(1000)
+      model.reducers.increase()
+    },
+  }),
+})
+
+const store = createStore({
+  counter,
+}, {
+  // 当前 Store 下的所有 Model 都会自动卸载
+  autoReset: true
+})
+
+const store = createStore({
+  counter,
+}, {
+  // 当前 Store 下的 `counter` Model 会自动卸载
+  autoReset: ['counter']
+})
+```
+
+### Devtools
+
+```ts
+import { createModel, createStore } from 'dobux'
+
+const counter = createModel()({
+  state: {
+    count: 0,
+  },
+  reducers: {
+    increase(state, payload: number) {
+      state.count += 1
+    },
+    decrease(state, payload: number) {
+      state.count -= 1
+    },
+  },
+  effects: (model, rootModel) => ({
+    async increaseAsync(payload: number) {
+      await wait(1000)
+      model.reducers.increase()
+    },
+  }),
+})
+
+const store = createStore({
+  counter,
+}, {
+  // 关闭当前 Store 下的所有 Model 的 Devtool 功能
+  devtools: false
+})
+
+const store = createStore({
+  counter,
+}, {
+  // 当前 Store 下的 `counter` Model 开启 Devtool 功能，其他 Model 关闭
+  devtools: ['counter']
 })
 ```
 
@@ -296,7 +378,7 @@ import store from './store'
 
 const Counter: FC = () => {
   const { state, reducers, effects } = store.useModel('counter', state => {
-      // 只有当数据源 `counter` 中的 `state.count` 改变时才会触发当前组件的 rerender
+      // 只有当模型 `counter` 中的 `count` 字段改变时才会触发当前组件的 rerender
       return {
         count: state.count,
       }
