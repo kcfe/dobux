@@ -66,11 +66,15 @@ function Counter() {
     reducers.increase()
   }
 
+  const handelDecrease = () => {
+    reducers.decrease()
+  }
+
   const handelIncreaseAsync = () => {
     reducers.increaseAsync()
   }
 
-  // 当异步请求 increaseAsync 执行时 loading 会设置为 true，显示 loading
+  // 当异步请求 `increaseAsync` 执行时 `loading` 会设置为 true，显示 loading
   if (effects.increaseAsync.loading) {
     return <p className="loading">loading ...</p>
   }
@@ -79,6 +83,7 @@ function Counter() {
     <div>
       <div>The count is：{state.count}</div>
       <button onClick={handelIncrease}>+</button>
+      <button onClick={handelDecrease}>-</button>
       <button onClick={handelIncreaseAsync}>async</button>
     </div>
   )

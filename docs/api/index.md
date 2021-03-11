@@ -157,7 +157,7 @@ const counter = createModel<RootModel, 'counter'>()({
 
 - `options.devtools?: boolean | Array<keyof models>`：在开发环境下模型是否支持连接 `redux devtools`，非必传，默认为 `true`，如果传入 `false` 表示当前 `store` 下的所有 `model` 都不支持连接 `devtools`，传入数组可以指定某些 `model` 不连接 `devtool`
 
-### 基本使用
+#### 基本使用
 
 ```ts
 import { createModel, createStore } from 'dobux'
@@ -187,7 +187,7 @@ const store = createStore({
 })
 ```
 
-### 自动重置
+#### 自动重置
 
 ```ts
 import { createModel, createStore } from 'dobux'
@@ -227,7 +227,7 @@ const store = createStore({
 })
 ```
 
-### Devtools
+#### Devtools
 
 ```ts
 import { createModel, createStore } from 'dobux'
@@ -359,7 +359,7 @@ import store from './store'
 const Counter: React.FC = () => {
   const { state, reducers, effects } = store.useModel('counter')
 
-  // 当异步请求 increaseAsync 执行时 loading 会设置为 true，显示 loading
+  // 当异步请求 `increaseAsync` 执行时 `loading` 会设置为 true，显示 loading
   if (effects.increaseAsync.loading) {
     return <div>loading ...</div>
   }

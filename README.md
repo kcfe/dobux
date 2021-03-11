@@ -3,7 +3,7 @@
 <h2 align="center" style="text-align: center">Dobux</h2>
 
 <p align="center" style="text-align: center">
-  Lightweight responsive state management solution based on React Context and React Hooks
+  Lightweight responsive state management solution based on React Context and React Hooks.
   <br><br>
   <a href="https://travis-ci.com/kcfe/dobux"><img src="https://travis-ci.com/kcfe/dobux.svg?branch=master" alt="Build Status"></a>
   <a href="https://codecov.io/gh/kcfe/dobux"><img src="https://codecov.io/gh/kcfe/dobux/branch/master/graph/badge.svg" alt="Coverage Status"></a>

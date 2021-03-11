@@ -3,7 +3,7 @@
 <h2 align="center" style="text-align: center">Dobux</h2>
 
 <p align="center" style="text-align: center">
-  基于 React Context 和 React Hooks 的轻量级响应式状态管理方案
+  基于 React Context 和 React Hooks 的轻量级响应式状态管理方案。
   <br><br>
   <a href="https://travis-ci.com/kcfe/dobux"><img src="https://travis-ci.com/kcfe/dobux.svg?branch=master" alt="Build Status"></a>
   <a href="https://codecov.io/gh/kcfe/dobux"><img src="https://codecov.io/gh/kcfe/dobux/branch/master/graph/badge.svg" alt="Coverage Status"></a>
