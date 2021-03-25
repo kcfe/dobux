@@ -71,7 +71,7 @@ function Counter() {
   }
 
   const handelIncreaseAsync = () => {
-    reducers.increaseAsync()
+    effects.increaseAsync()
   }
 
   // 当异步请求 `increaseAsync` 执行时 `loading` 会设置为 true，显示 loading

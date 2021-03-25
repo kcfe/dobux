@@ -212,19 +212,25 @@ const counter = createModel()({
   }),
 })
 
-const store = createStore({
-  counter,
-}, {
-  // 当前 Store 下的所有 Model 都会自动卸载
-  autoReset: true
-})
+const store = createStore(
+  {
+    counter,
+  },
+  {
+    // 当前 Store 下的所有 Model 都会自动卸载
+    autoReset: true,
+  }
+)
 
-const store = createStore({
-  counter,
-}, {
-  // 当前 Store 下的 `counter` Model 会自动卸载
-  autoReset: ['counter']
-})
+const store = createStore(
+  {
+    counter,
+  },
+  {
+    // 当前 Store 下的 `counter` Model 会自动卸载
+    autoReset: ['counter'],
+  }
+)
 ```
 
 #### Devtools
@@ -252,19 +258,25 @@ const counter = createModel()({
   }),
 })
 
-const store = createStore({
-  counter,
-}, {
-  // 关闭当前 Store 下的所有 Model 的 Devtool 功能
-  devtools: false
-})
+const store = createStore(
+  {
+    counter,
+  },
+  {
+    // 关闭当前 Store 下的所有 Model 的 Devtool 功能
+    devtools: false,
+  }
+)
 
-const store = createStore({
-  counter,
-}, {
-  // 当前 Store 下的 `counter` Model 开启 Devtool 功能，其他 Model 关闭
-  devtools: ['counter']
-})
+const store = createStore(
+  {
+    counter,
+  },
+  {
+    // 当前 Store 下的 `counter` Model 开启 Devtool 功能，其他 Model 关闭
+    devtools: ['counter'],
+  }
+)
 ```
 
 ### `store.Provider: (props: { children: React.ReactElement }) => React.ReactElement`
