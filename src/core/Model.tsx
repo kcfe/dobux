@@ -1,15 +1,15 @@
 import { useState, useRef, useEffect, Dispatch } from 'react'
-import { unstable_batchedUpdates as batchedUpdates} from 'react-dom'
+import { unstable_batchedUpdates as batchedUpdates } from 'react-dom'
 import produce from 'immer'
-import { 
-  ConfigReducer, 
-  ContextPropsModel, 
-  MapStateToModel, 
-  ModelConfig, 
-  ModelConfigEffect, 
-  ModelContextProps, 
-  Noop, 
-  StateSubscriber 
+import {
+  ConfigReducer,
+  ContextPropsModel,
+  MapStateToModel,
+  ModelConfig,
+  ModelConfigEffect,
+  ModelContextProps,
+  Noop,
+  StateSubscriber,
 } from '../types'
 import { invariant } from '../utils/invariant'
 import { isFunction, isObject } from '../utils/type'
@@ -30,20 +30,9 @@ interface ModelInstance {
   [key: string]: number
 }
 
-interface DevtoolExtension {
-  connect: (options: { name?: string }) => DevtoolInstance
-  disconnect: Noop
-}
-
-interface DevtoolInstance {
-  subscribe: (cb: (message: { type: string; state: any }) => void) => Noop
-  send: (actionType: string, payload: Record<string, unknown>) => void
-  init: (state: any) => void
-}
-
 /* istanbul ignore next */
-const devtoolExtension: DevtoolExtension =
-  isDev && typeof window !== 'undefined' && (window as any).__REDUX_DEVTOOLS_EXTENSION__
+const devtoolExtension =
+  isDev && typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION__
 
 export class Model<C extends ModelConfig> {
   static instances: ModelInstance = Object.create(null)
@@ -62,7 +51,7 @@ export class Model<C extends ModelConfig> {
 
   public Provider: React.FC
   private useContext: () => ModelContextProps
-  
+
   constructor(private options: ModelOptions<C>) {
     const { storeName, name, config, rootModel } = options
 
@@ -72,7 +61,7 @@ export class Model<C extends ModelConfig> {
     if (!Model.instances[this.instanceName]) {
       Model.instances[this.instanceName] = 0
     }
-    
+
     this.initialState = config.state
     this.model = this.initModel(config)
 
@@ -116,10 +105,10 @@ export class Model<C extends ModelConfig> {
       }
 
       return (): void => {
-        if(this.options.autoReset) {
+        if (this.options.autoReset) {
           this.model.state = this.initialState
         }
-        
+
         // unsubscribe when component unmount
         this.container.unsubscribe('state', subscriberRef.current as StateSubscriber<C['state']>)
         this.container.unsubscribe('effect', dispatcher)
@@ -131,7 +120,7 @@ export class Model<C extends ModelConfig> {
           // disconnect after all dependent components are destroyed
           if (Model.instances[this.instanceName] <= 0) {
             this.unsubscribeDevtool()
-            devtoolExtension?.disconnect?.()
+            devtoolExtension && devtoolExtension.disconnect?.()
           }
         }
       }
@@ -249,10 +238,12 @@ export class Model<C extends ModelConfig> {
     return Object.keys(config.effects).reduce((effects, name) => {
       const originEffect = config.effects[name]
 
-      const effect: ModelConfigEffect<typeof originEffect> = async (...payload: any): Promise<void> => {
+      const effect: ModelConfigEffect<typeof originEffect> = async (
+        ...payload: any[]
+      ): Promise<void> => {
         try {
           effect.identifier++
-          
+
           this.isInternalUpdate = true
           effect.loading = true
           this.isInternalUpdate = false
@@ -282,7 +273,7 @@ export class Model<C extends ModelConfig> {
       Object.defineProperty(effect, 'loading', {
         configurable: false,
         enumerable: true,
-        
+
         get() {
           that.container.subscribe('effect', that.currentDispatcher)
           return value
@@ -291,11 +282,11 @@ export class Model<C extends ModelConfig> {
         set(newValue) {
           // avoid modify effect loading out of internal
           /* istanbul ignore else */
-          if(newValue !== value && that.isInternalUpdate) {
+          if (newValue !== value && that.isInternalUpdate) {
             value = newValue
             that.container.notify()
           }
-        }
+        },
       })
 
       effects[name] = effect
@@ -332,7 +323,7 @@ export class Model<C extends ModelConfig> {
             }
           }
         )
-  
+
         this.devtoolInstance.init(this.initialState)
       }
     }
