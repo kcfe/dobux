@@ -1,5 +1,11 @@
 # Change Log 
 
+## [1.0.5-beta.0](https://github.com/kcfe/dobux/compare/v1.0.4...v1.0.5-beta.0) (2021-04-01)
+
+
+
+ 
+
 ## [1.0.4](https://github.com/kcfe/dobux/compare/v1.0.3...v1.0.4) (2021-03-31)
 
 
@@ -83,6 +89,3 @@
 ### ✨ Features
 
 * init project ([7dce606](https://github.com/kwai-ad-fe/dobux/commit/7dce606e8a6be184e6004aba4340fac8ead83160))
-
-
-
