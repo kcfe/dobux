@@ -1,5 +1,16 @@
 # Change Log 
 
+## [1.0.6](https://github.com/kcfe/dobux/compare/v1.0.5...v1.0.6) (2021-04-14)
+
+
+### 🐛 Bug Fixes
+
+* immer return value ([f3b3005](https://github.com/kcfe/dobux/commit/f3b3005ef4eb1c47c3d483fa38ef6f3bbc60f460))
+
+
+
+ 
+
 ## [1.0.5](https://github.com/kcfe/dobux/compare/v1.0.5-beta.0...v1.0.5) (2021-04-09)
 
 
