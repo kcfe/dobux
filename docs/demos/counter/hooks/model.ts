@@ -26,4 +26,3 @@ export const counter = createModel<RootModel, 'counter'>()({
     },
   }),
 })
-

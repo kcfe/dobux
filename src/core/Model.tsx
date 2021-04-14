@@ -145,7 +145,7 @@ export class Model<C extends ModelConfig> {
 
     if (typeof state === 'object') {
       newState = produce(state, draft => {
-        reducer(draft, ...payload)
+        return reducer(draft, ...payload)
       })
     } else {
       newState = reducer(state, ...payload)
