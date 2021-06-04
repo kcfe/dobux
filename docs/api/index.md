@@ -349,6 +349,31 @@ function App(props: Props) {
 export default withRouter(withProvider(App))
 ```
 
+### `store.withProviderForwardRef: <T, P = Record<string, unknown>>(Component: React.ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<T>>) => React.ReactElement`
+
+该 API 与 `withProvider` 的区别在于 `withProvider` 不能增强使用 `React.forwardRef` 包裹的组件，该 API 可以解决这个问题
+
+```tsx | pure
+import React, { useImperativeHandle } from 'react'
+import store from './store'
+
+const { withProviderForwardRef } = store
+
+const WithProviderForwardRefDemo = React.forwardRef((props, ref) => {
+  useImperativeHandle(ref, () => {
+    return {
+      say() {
+        console.log('Hello Dobux')
+      },
+    }
+  })
+
+  return <></>
+})
+
+export default withProviderForwardRef(WithProviderForwardRefDemo)
+```
+
 ### `store.useModel: (modelName: string, mapStateToModel?: (state: State) => any) => { state, reducers, effects }`
 
 通过该 API 可以在函数组件内获取对应模型的实例，接受两个参数：
