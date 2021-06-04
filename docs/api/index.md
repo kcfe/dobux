@@ -6,8 +6,7 @@ nav:
   title: API
 toc: menu
 ---
-
-# API
+ # API
 
 ## `createModel<RootModel, 'modelName'>()(model)`
 

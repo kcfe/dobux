@@ -38,23 +38,29 @@ export class Store<C extends Configs> {
     return <>{children}</>
   }
 
-  public withProvider = <T extends Record<string, unknown>>(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    Component: React.ComponentType<T>
-  ) => {
-    return (props: T): React.ReactElement => {
+  public withProvider = <T extends Record<string, unknown>>(Component: React.ComponentType<T>) => {
+    const WithProvider: React.FC<T> = props => {
       return (
         <this.Provider>
           <Component {...props} />
         </this.Provider>
       )
     }
+
+    const displayName = Component.displayName || Component.name
+
+    WithProvider.displayName = `${displayName}-with-provider`
+
+    hoistNonReactStatics(WithProvider, Component)
+
+    return WithProvider
   }
 
   // https://stackoverflow.com/questions/61743517/what-is-the-right-way-to-use-forwardref-with-withrouter
   public withProviderForwardRef = <T, P = Record<string, unknown>>(
     Component: React.ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<T>>
   ) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const WithProvider: React.FC<any> = ({ forwardedRef, ...props }) => {
       return (
         <this.Provider>
@@ -101,12 +107,19 @@ export class Store<C extends Configs> {
     modelName: K,
     mapStateToModel?: MapStateToModel<Models<C>[K], S>
   ): HOC => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return Component => {
-      return (props): React.ReactElement => {
+      const WithModel: React.FC = props => {
         const store = this.useModel(modelName, mapStateToModel)
         return <Component {...store} {...props} />
       }
+
+      const displayName = Component.displayName || Component.name
+
+      WithModel.displayName = `${displayName}-with-model`
+
+      hoistNonReactStatics(WithModel, Component)
+
+      return WithModel
     }
   }
 
