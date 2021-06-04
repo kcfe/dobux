@@ -38,8 +38,8 @@ export class Store<C extends Configs> {
     return <>{children}</>
   }
 
-  public withProvider = <T extends Record<string, unknown>>(Component: React.ComponentType<T>) => {
-    const WithProvider: React.FC<T> = props => {
+  public withProvider = <P extends any>(Component: React.ComponentType<P>) => {
+    const WithProvider: React.FC<P> = props => {
       return (
         <this.Provider>
           <Component {...props} />
@@ -57,7 +57,7 @@ export class Store<C extends Configs> {
   }
 
   // https://stackoverflow.com/questions/61743517/what-is-the-right-way-to-use-forwardref-with-withrouter
-  public withProviderForwardRef = <T, P = Record<string, unknown>>(
+  public withProviderForwardRef = <T, P = any>(
     Component: React.ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<T>>
   ) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
