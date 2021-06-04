@@ -1,9 +1,19 @@
-import React from 'react'
+import React, { PropsWithoutRef, RefAttributes } from 'react'
+import hoistNonReactStatics from 'hoist-non-react-statics'
 import { Model } from './Model'
 import { isObject, isArray, isUndefined, isNull, isFunction } from '../utils/type'
 import { invariant } from '../utils/invariant'
 
-import { Configs, StoreOptions, ModelConfig, StoreProvider, MapStateToModel, Models, ModelState, HOC } from '../types'
+import {
+  Configs,
+  StoreOptions,
+  ModelConfig,
+  StoreProvider,
+  MapStateToModel,
+  Models,
+  ModelState,
+  HOC,
+} from '../types'
 
 type StoreModels<C extends Configs> = {
   [K in keyof C]: Model<ModelConfig<C[K]['state']>>
@@ -12,8 +22,8 @@ type StoreModels<C extends Configs> = {
 export class Store<C extends Configs> {
   private models: StoreModels<C>
   private rootModel = Object.create(null)
-  
-  constructor(private configs: C, options: Required<StoreOptions<C>>) {    
+
+  constructor(private configs: C, options: Required<StoreOptions<C>>) {
     this.models = this.initModels(configs, options)
     this.getState = this.getState.bind(this)
   }
@@ -30,7 +40,7 @@ export class Store<C extends Configs> {
 
   public withProvider = <T extends Record<string, unknown>>(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    Component: React.ComponentType<T>,
+    Component: React.ComponentType<T>
   ) => {
     return (props: T): React.ReactElement => {
       return (
@@ -41,6 +51,31 @@ export class Store<C extends Configs> {
     }
   }
 
+  // https://stackoverflow.com/questions/61743517/what-is-the-right-way-to-use-forwardref-with-withrouter
+  public withProviderForwardRef = <T, P = Record<string, unknown>>(
+    Component: React.ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<T>>
+  ) => {
+    const WithProvider: React.FC<any> = ({ forwardedRef, ...props }) => {
+      return (
+        <this.Provider>
+          <Component {...props} ref={forwardedRef} />
+        </this.Provider>
+      )
+    }
+
+    const WithProviderForwardRef = React.forwardRef<T, P>((props, ref) => (
+      <WithProvider {...props} forwardedRef={ref} />
+    ))
+
+    const displayName = Component.displayName || Component.name
+
+    WithProviderForwardRef.displayName = `${displayName}-with-provider-forwardRef`
+
+    hoistNonReactStatics(WithProviderForwardRef, Component)
+
+    return WithProviderForwardRef
+  }
+
   public useModel = <K extends keyof C, S = undefined, R = undefined, E = undefined>(
     modelName: K,
     mapStateToModel: MapStateToModel<Models<C>[K], S> = (state: S): S => state
@@ -49,7 +84,10 @@ export class Store<C extends Configs> {
 
     const modelNames = Object.keys(this.configs)
 
-    invariant(modelNames.indexOf(modelName as string) > -1, `[store.useModel] Expected the modelName to be one of ${modelNames}, but got ${modelName}`)
+    invariant(
+      modelNames.indexOf(modelName as string) > -1,
+      `[store.useModel] Expected the modelName to be one of ${modelNames}, but got ${modelName}`
+    )
 
     invariant(
       isUndefined(mapStateToModel) || isFunction(mapStateToModel),
@@ -77,7 +115,10 @@ export class Store<C extends Configs> {
   public getState<K extends keyof C>(modelName?: K) {
     if (modelName) {
       const modelNames = Object.keys(this.configs)
-      invariant(modelNames.indexOf(modelName as string) > -1, `[store.getState] Expected the modelName to be one of ${modelNames}, but got ${modelName}`)
+      invariant(
+        modelNames.indexOf(modelName as string) > -1,
+        `[store.getState] Expected the modelName to be one of ${modelNames}, but got ${modelName}`
+      )
 
       return this.rootModel[modelName].state
     } else {
@@ -107,9 +148,9 @@ export class Store<C extends Configs> {
       const config = Object.create(null)
 
       config.state = isObject(state) ? { ...state } : isArray(state) ? [...state] : state
-      config.reducers =  { ...reducers }
+      config.reducers = { ...reducers }
       config.effects = effects(config, this.rootModel)
-        
+
       models[name] = new Model({
         storeName,
         name,
