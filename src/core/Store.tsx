@@ -123,6 +123,35 @@ export class Store<C extends Configs> {
     }
   }
 
+
+
+  public withModels = <K extends keyof C, S = undefined>(
+    modelNames: K[],
+    mapStateToModels?: {
+      [p in keyof C]?: MapStateToModel<Models<C>[p], S>
+    },
+    contextName = 'dobuxModels'
+  ): HOC => {
+    return Component => {
+      const WithModels: React.FC = props => {
+        const store = {
+          [contextName]: modelNames.reduce((s, modelName) => {
+            s[modelName] = this.useModel(modelName, mapStateToModels?.[modelName])
+            return s
+          }, Object.create(null))
+        }
+        return <Component {...store} {...props} />
+      }
+
+      const displayName = Component.displayName || Component.name
+
+      WithModels.displayName = `${displayName}-with-models`
+
+      hoistNonReactStatics(WithModels, Component)
+
+      return WithModels
+    }
+  }
   public getState(): ModelState<C>
   public getState<K extends keyof C>(modelName: K): C[K]['state']
   public getState<K extends keyof C>(modelName?: K) {

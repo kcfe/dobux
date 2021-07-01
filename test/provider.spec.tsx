@@ -2,9 +2,10 @@ import React from 'react'
 import { render } from '@testing-library/react'
 import { act } from '@testing-library/react-hooks'
 import { createStore } from '../src/index'
-import { counter } from './helper/model'
+import { counter, counter2 } from './helper/model'
 import { createHook } from './helper/createHook'
 import { Counter } from './helper/CountClassComponent'
+import { CounterWithContextName, CounterWithDefault } from './helper/MultiCountClassComponent'
 
 describe('Provider test', () => {
   it('should render correct when use provider in component', () => {
@@ -79,6 +80,46 @@ describe('Provider test', () => {
     )
 
     expect(wrapper.getByTestId('count').innerHTML).toBe('0')
+  })
+
+  it('should add specific stores to class component context', () => {
+    const store = createStore({
+      counter,
+      counter2,
+    })
+    const { Provider, withModels } = store
+
+    const Component2 = withModels(['counter', 'counter2'])(CounterWithDefault)
+
+    const wrapper2 = render(
+      <Provider>
+        <Component2 />
+      </Provider>
+    )
+    expect(wrapper2.getByTestId('count-1').innerHTML).toBe('0')
+    expect(wrapper2.getByTestId('count-2').innerHTML).toBe('0')
+  })
+
+  it('should add specific stores to class component context with custom property', () => {
+    const store = createStore({
+      counter,
+      counter2,
+    })
+    const { Provider, withModels } = store
+
+    const Component = withModels(['counter', 'counter2'], {
+      counter: state => ({
+        count: state.count
+      })
+    }, 'forDobux')(CounterWithContextName)
+
+    const wrapper = render(
+      <Provider>
+        <Component />
+      </Provider>
+    )
+    expect(wrapper.getByTestId('count-1').innerHTML).toBe('0')
+    expect(wrapper.getByTestId('count-2').innerHTML).toBe('0')
   })
 
   it('should not reset store when component unmount', async () => {
