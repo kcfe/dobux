@@ -583,41 +583,48 @@ export interface CounterProps {
 }
 
 class Counter extends React.Component<CounterProps> {
-  
-  handleIncrease = () => {
-    const { forDobux: { counter: { reducers } }} = this.props
-    reducers.increase()
+  handleIncrease = (modelName: string) => () => {
+    this.props.forDobux[modelName].reducers.increase()
   }
 
-  handleDecrease = () => {
-    const { forDobux: { counter: { reducers } }} = this.props
-    reducers.decrease()
+  handleDecrease = (modelName: string) => () => {
+    this.props.forDobux[modelName].reducers.decrease()
   }
 
-  handleIncreaseAsync = () => {
-    const { forDobux: { counter: { effects } }} = this.props
-    effects.increaseAsync()
+  handleIncreaseAsync = (modelName: string) => () => {
+    this.props.forDobux[modelName].effects.increaseAsync()
   }
 
   render() {
-    const { forDobux: { counter: { state, effects } } } = this.props
+    const {
+      forDobux: {
+        counter1: { state: state1, effects: effects1 },
+        counter2: { state: state2, effects: effects2 },
+      }
+    } = this.props
 
-    if (effects.increaseAsync.loading) {
+    if (effects1.increaseAsync.loading || effects2.increaseAsync.loading) {
       return <p className="loading">loading ...</p>
     }
 
-    return (
-      <div className="counter">
-        <p>The count is: {state.count}</p>
-        <button onClick={this.handleIncrease}>+</button>
-        <button onClick={this.handleDecrease}>-</button>
-        <button onClick={this.handleIncreaseAsync}>async</button>
+    return <>
+      <div className="counter1">
+        <p>The count1 is: {state1.count}</p>
+        <button onClick={this.handleIncrease('counter1')}>+</button>
+        <button onClick={this.handleDecrease('counter1')}>-</button>
+        <button onClick={this.handleIncreaseAsync('counter1')}>async</button>
       </div>
-    )
+      <div className="counter2">
+        <p>The count2 is: {state2.count}</p>
+        <button onClick={this.handleIncrease('counter2')}>+</button>
+        <button onClick={this.handleDecrease('counter2')}>-</button>
+        <button onClick={this.handleIncreaseAsync('counter2')}>async</button>
+      </div>
+    </>
   }
 }
 
-export default withModels(['counter'], undefined, 'forDobux')(Counter)
+export default withModels(['counter1', 'counter2'], undefined, 'forDobux')(Counter)
 ```
 
 #### 性能优化
@@ -631,51 +638,64 @@ const { withModels } = store
 
 export interface CounterProps {
   dobuxModels: {
-    counter:  {
-      state: Pick<RootModel['counter']['state'], 'count'>
-      reducers: RootModel['counter']['reducers']
-      effects: RootModel['counter']['effects']
+    [k: keyof RootModel]:  {
+      state: RootModel[k]['state']
+      reducers: RootModel[k]['reducers']
+      effects: RootModel[k]['effects']
     }
   }
 }
 
 class Counter extends React.Component<CounterProps> {
-  handleIncrease = () => {
-    const { dobuxModels: { counter: { reducers } }} = this.props
-    reducers.increase()
+  handleIncrease = (modelName: string) => () => {
+    this.props.dobuxModels[modelName].reducers.increase()
   }
 
-  handleDecrease = () => {
-    const { dobuxModels: { counter: { reducers } }} = this.props
-    reducers.decrease()
+  handleDecrease = (modelName: string) => () => {
+    this.props.dobuxModels[modelName].reducers.decrease()
   }
 
-  handleIncreaseAsync = () => {
-    const { dobuxModels: { counter: { effects } }} = this.props
-    effects.increaseAsync()
+  handleIncreaseAsync = (modelName: string) => () => {
+    this.props.dobuxModels[modelName].effects.increaseAsync()
   }
 
   render() {
-    const { dobuxModels: { counter: { state, effects } } } = this.props
+    const {
+      dobuxModels: {
+        counter1: { state: state1, effects: effects1 },
+        counter2: { state: state2, effects: effects2 },
+      }
+    } = this.props
 
-    if (effects.increaseAsync.loading) {
+    if (effects1.increaseAsync.loading || effects2.increaseAsync.loading) {
       return <p className="loading">loading ...</p>
     }
 
-    return (
-      <div className="counter">
-        <p>The count is: {state.count}</p>
-        <button onClick={this.handleIncrease}>+</button>
-        <button onClick={this.handleDecrease}>-</button>
-        <button onClick={this.handleIncreaseAsync}>async</button>
+    return <>
+      <div className="counter1">
+        <p>The count1 is: {state1.count}</p>
+        <button onClick={this.handleIncrease('counter1')}>+</button>
+        <button onClick={this.handleDecrease('counter1')}>-</button>
+        <button onClick={this.handleIncreaseAsync('counter1')}>async</button>
       </div>
-    )
+      <div className="counter2">
+        <p>The count2 is: {state2.count}</p>
+        <button onClick={this.handleIncrease('counter2')}>+</button>
+        <button onClick={this.handleDecrease('counter2')}>-</button>
+        <button onClick={this.handleIncreaseAsync('counter2')}>async</button>
+      </div>
+    </>
   }
 }
 
-export default withModels(['counter'], {
-  counter: state => {
-    // 只有当数据源 `counter` 中的 `state.count` 改变时才会触发当前组件的 re-render
+export default withModels(['counter1', 'counter2'], {
+  counter1: state => {
+    // 只有当数据源 `counter1` 中的 `state.count` 改变时才会触发当前组件的 re-render
+    return {
+      count: state.count,
+    }
+  },
+  counter2: state => {
     return {
       count: state.count,
     }
