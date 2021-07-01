@@ -105,11 +105,20 @@ export class Store<C extends Configs> {
 
   public withModel = <K extends keyof C, S = undefined>(
     modelName: K,
-    mapStateToModel?: MapStateToModel<Models<C>[K], S>
+    mapStateToModel?: MapStateToModel<Models<C>[K], S>,
+    contextName?: string
   ): HOC => {
     return Component => {
       const WithModel: React.FC = props => {
         const store = this.useModel(modelName, mapStateToModel)
+        if (contextName && typeof contextName === 'string') {
+          if (props.hasOwnProperty(contextName)) {
+            console.warn(`IMPORT MODEL FAILED: The component wrapped by [withModel] already has "${contextName}" in its props!`)
+            return <Component {...props} />
+          } else {
+            return <Component {...{ [contextName]: store }} {...props} />
+          }
+        }
         return <Component {...store} {...props} />
       }
 
@@ -130,7 +139,7 @@ export class Store<C extends Configs> {
     mapStateToModels?: {
       [p in keyof C]?: MapStateToModel<Models<C>[p], S>
     },
-    contextName = 'dobuxModels'
+    contextName = 'models'
   ): HOC => {
     return Component => {
       const WithModels: React.FC = props => {

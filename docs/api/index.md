@@ -549,13 +549,13 @@ export default withModel('counter', state => {
 })(Count)
 ```
 
-### `store.withModels: (modelNames: string[], mapStateToModels?: { [modelName: string]: (state: State) => any) }, contextName = 'dobuxModels') => (Component: React.ComponentType) => React.ComponentType`
+### `store.withModels: (modelNames: string[], mapStateToModels?: { [modelName: string]: (state: State) => any) }, contextName = 'models') => (Component: React.ComponentType) => React.ComponentType`
 
 `withModel`只支持传入一个model，而`withModels`支持传入多个models供Class Component消费，该组件接受三个参数：
 
 - `modelNames`：需要消费的模型名称列表，即执行 `createStore(models)` 时传入对象的 `key` 值 `keyof models`，必传
 - `mapStateToModels`：返回一个自定义的对象作为组件真实的消费模型 `state`，表示当前组件只有在这个返回对象发生改变时才会重新触发组件的渲染，用于性能优化，阻止不必要的渲染，入参为当前模型最新的 `state`，非必传
-- `contextName`：在被包裹组件的`props`上挂载的属性名，默认为`dobuxModels`，**当使用的`contextName`和组件已有props冲突时，默认不引入model，保留原有`contextName`的值**
+- `contextName`：在被包裹组件的`props`上挂载的属性名，默认为`models`，**当使用的`contextName`和组件已有props冲突时，默认不引入model，保留原有`contextName`的值**
 
 
 每个model的状态和方法都会在被包裹组件的 `props[contextName][modelName]` 上暴露：
@@ -637,7 +637,7 @@ import store, { RootModel } from './store'
 const { withModels } = store
 
 export interface CounterProps {
-  dobuxModels: {
+  models: {
     [k: keyof RootModel]:  {
       state: RootModel[k]['state']
       reducers: RootModel[k]['reducers']
@@ -648,20 +648,20 @@ export interface CounterProps {
 
 class Counter extends React.Component<CounterProps> {
   handleIncrease = (modelName: string) => () => {
-    this.props.dobuxModels[modelName].reducers.increase()
+    this.props.models[modelName].reducers.increase()
   }
 
   handleDecrease = (modelName: string) => () => {
-    this.props.dobuxModels[modelName].reducers.decrease()
+    this.props.models[modelName].reducers.decrease()
   }
 
   handleIncreaseAsync = (modelName: string) => () => {
-    this.props.dobuxModels[modelName].effects.increaseAsync()
+    this.props.models[modelName].effects.increaseAsync()
   }
 
   render() {
     const {
-      dobuxModels: {
+      models: {
         counter1: { state: state1, effects: effects1 },
         counter2: { state: state2, effects: effects2 },
       }

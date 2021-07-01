@@ -33,7 +33,7 @@ export class CounterWithContextName extends React.Component<CounterProps> {
 export class CounterWithDefault extends React.Component<CounterProps> {
   render() {
     const {
-			dobuxModels: {
+			models: {
 				counter,
 				counter2
 			}
@@ -56,10 +56,22 @@ export class CounterWithDefault extends React.Component<CounterProps> {
 }
 
 export class CounterWithSameContextName extends React.Component<{
-  dobuxModels: string
+  models: string,
+  myModel: any
 }> {
   render() {
-    const { dobuxModels } = this.props
-    return <div data-testid="show-dobuxModels">{dobuxModels}</div>
+    return <div data-testid="show-models">{this.props.models}</div>
+  }
+}
+
+export class CounterWithOtherContextName extends React.Component<{
+  myProp: string,
+  myModel: any
+}> {
+  render() {
+    return <div>
+      <div data-testid="show-myProp">{this.props.myProp}</div>
+      <div data-testid="show-myModel">{this.props.myModel.state.count}</div>
+    </div>
   }
 }
