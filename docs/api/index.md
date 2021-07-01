@@ -549,6 +549,140 @@ export default withModel('counter', state => {
 })(Count)
 ```
 
+### `store.withModels: (modelNames: string[], mapStateToModels?: { [modelName: string]: (state: State) => any) }, contextName = 'dobuxModels') => (Component: React.ComponentType) => React.ComponentType`
+
+`withModel`只支持传入一个model，而`withModels`支持传入多个models供Class Component消费，该组件接受三个参数：
+
+- `modelNames`：需要消费的模型名称列表，即执行 `createStore(models)` 时传入对象的 `key` 值 `keyof models`，必传
+- `mapStateToModels`：返回一个自定义的对象作为组件真实的消费模型 `state`，表示当前组件只有在这个返回对象发生改变时才会重新触发组件的渲染，用于性能优化，阻止不必要的渲染，入参为当前模型最新的 `state`，非必传
+- `contextName`：在被包裹组件的`props`上挂载的属性名，默认为`dobuxModels`，**当使用的`contextName`和组件已有props冲突时，默认不引入model，保留原有`contextName`的值**
+
+
+每个model的状态和方法都会在被包裹组件的 `props[contextName][modelName]` 上暴露：
+
+- `props[contextName].modelA.state`：当前消费的模型`modelA`对应的最新状态
+- `props[contextName].modelA.reducers`：当前组件可用于修改模型`modelA`状态的方法
+- `props[contextName].modelA.effects`：当前组件可用于执行模型`modelA`副作用的方法，其中 `effects.effectName.loading` 记录了异步操作时的状态，可以简化视图层逻辑
+
+
+#### 基本用法
+
+```tsx | pure
+import store, { RootModel } from './store'
+
+const { withModels } = store
+
+export interface CounterProps {
+  forDobux: {
+    [k: keyof RootModel]:  {
+      state: RootModel[k]['state']
+      reducers: RootModel[k]['reducers']
+      effects: RootModel[k]['effects']
+    }
+  }
+}
+
+class Counter extends React.Component<CounterProps> {
+  
+  handleIncrease = () => {
+    const { forDobux: { counter: { reducers } }} = this.props
+    reducers.increase()
+  }
+
+  handleDecrease = () => {
+    const { forDobux: { counter: { reducers } }} = this.props
+    reducers.decrease()
+  }
+
+  handleIncreaseAsync = () => {
+    const { forDobux: { counter: { effects } }} = this.props
+    effects.increaseAsync()
+  }
+
+  render() {
+    const { forDobux: { counter: { state, effects } } } = this.props
+
+    if (effects.increaseAsync.loading) {
+      return <p className="loading">loading ...</p>
+    }
+
+    return (
+      <div className="counter">
+        <p>The count is: {state.count}</p>
+        <button onClick={this.handleIncrease}>+</button>
+        <button onClick={this.handleDecrease}>-</button>
+        <button onClick={this.handleIncreaseAsync}>async</button>
+      </div>
+    )
+  }
+}
+
+export default withModels(['counter'], undefined, 'forDobux')(Counter)
+```
+
+#### 性能优化
+
+在某些组件中可能只需要依赖某一数据源的部分状态，同时只有当这部分依赖的状态变化时才会重新渲染，可以通过 `withModels` 第二个参数的 `mapStateToModel` 属性进行控制
+
+```tsx | pure
+import store, { RootModel } from './store'
+
+const { withModels } = store
+
+export interface CounterProps {
+  dobuxModels: {
+    counter:  {
+      state: Pick<RootModel['counter']['state'], 'count'>
+      reducers: RootModel['counter']['reducers']
+      effects: RootModel['counter']['effects']
+    }
+  }
+}
+
+class Counter extends React.Component<CounterProps> {
+  handleIncrease = () => {
+    const { dobuxModels: { counter: { reducers } }} = this.props
+    reducers.increase()
+  }
+
+  handleDecrease = () => {
+    const { dobuxModels: { counter: { reducers } }} = this.props
+    reducers.decrease()
+  }
+
+  handleIncreaseAsync = () => {
+    const { dobuxModels: { counter: { effects } }} = this.props
+    effects.increaseAsync()
+  }
+
+  render() {
+    const { dobuxModels: { counter: { state, effects } } } = this.props
+
+    if (effects.increaseAsync.loading) {
+      return <p className="loading">loading ...</p>
+    }
+
+    return (
+      <div className="counter">
+        <p>The count is: {state.count}</p>
+        <button onClick={this.handleIncrease}>+</button>
+        <button onClick={this.handleDecrease}>-</button>
+        <button onClick={this.handleIncreaseAsync}>async</button>
+      </div>
+    )
+  }
+}
+
+export default withModels(['counter'], {
+  counter: state => {
+    // 只有当数据源 `counter` 中的 `state.count` 改变时才会触发当前组件的 re-render
+    return {
+      count: state.count,
+    }
+  }
+})(Count)
+```
+
 ### `store.getState: (modelName?: string) => ModelState`
 
 获取指定（所有）模型的最新状态 `state`，可以在组件外部使用。可以解决在闭包中获取最新的状态值或者想要只使用状态而不订阅更新的场景

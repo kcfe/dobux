@@ -134,6 +134,10 @@ export class Store<C extends Configs> {
   ): HOC => {
     return Component => {
       const WithModels: React.FC = props => {
+        if (props.hasOwnProperty(contextName)) {
+          console.warn(`IMPORT MODELS FAILED: The component wrapped by [withModels] already has "${contextName}" in its props!`)
+          return <Component {...props} />
+        }
         const store = {
           [contextName]: modelNames.reduce((s, modelName) => {
             s[modelName] = this.useModel(modelName, mapStateToModels?.[modelName])

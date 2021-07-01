@@ -5,7 +5,11 @@ import { createStore } from '../src/index'
 import { counter, counter2 } from './helper/model'
 import { createHook } from './helper/createHook'
 import { Counter } from './helper/CountClassComponent'
-import { CounterWithContextName, CounterWithDefault } from './helper/MultiCountClassComponent'
+import {
+  CounterWithContextName,
+  CounterWithDefault,
+  CounterWithSameContextName,
+} from './helper/MultiCountClassComponent'
 
 describe('Provider test', () => {
   it('should render correct when use provider in component', () => {
@@ -101,6 +105,9 @@ describe('Provider test', () => {
   })
 
   it('should add specific stores to class component context with custom property', () => {
+    const originalWarn = console.warn
+    console.warn = jest.fn()
+    
     const store = createStore({
       counter,
       counter2,
@@ -120,6 +127,20 @@ describe('Provider test', () => {
     )
     expect(wrapper.getByTestId('count-1').innerHTML).toBe('0')
     expect(wrapper.getByTestId('count-2').innerHTML).toBe('0')
+
+    const Component2 = withModels(['counter', 'counter2'])(CounterWithSameContextName)
+
+    const wrapper2 = render(
+      <Provider>
+        {/* @ts-ignore */}
+        <Component2 dobuxModels="correct answer" />
+      </Provider>
+    )
+    
+    expect(console.warn).toHaveBeenCalledWith('IMPORT MODELS FAILED: The component wrapped by [withModels] already has "dobuxModels" in its props!')
+    expect(wrapper2.getByTestId('show-dobuxModels').innerHTML).toBe('correct answer')
+
+    console.warn = originalWarn
   })
 
   it('should not reset store when component unmount', async () => {

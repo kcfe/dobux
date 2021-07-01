@@ -54,3 +54,12 @@ export class CounterWithDefault extends React.Component<CounterProps> {
     )
   }
 }
+
+export class CounterWithSameContextName extends React.Component<{
+  dobuxModels: string
+}> {
+  render() {
+    const { dobuxModels } = this.props
+    return <div data-testid="show-dobuxModels">{dobuxModels}</div>
+  }
+}
