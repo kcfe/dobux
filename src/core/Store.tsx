@@ -111,15 +111,40 @@ export class Store<C extends Configs> {
     return Component => {
       const WithModel: React.FC = props => {
         const store = this.useModel(modelName, mapStateToModel)
+
         if (contextName && typeof contextName === 'string') {
           if (props.hasOwnProperty(contextName)) {
-            console.warn(`IMPORT MODEL FAILED: The component wrapped by [withModel] already has "${contextName}" in its props!`)
+            console.warn(
+              `IMPORT MODEL FAILED: The component wrapped by [withModel] already has "${contextName}" in its props!`
+            )
             return <Component {...props} />
           } else {
             return <Component {...{ [contextName]: store }} {...props} />
           }
+        } else {
+          if (props.hasOwnProperty('state')) {
+            console.warn(
+              `IMPORT MODEL FAILED: The component wrapped by [withModel] already has "state" in its props!`
+            )
+            Reflect.deleteProperty(store, 'state')
+          }
+
+          if (props.hasOwnProperty('reducers')) {
+            console.warn(
+              `IMPORT MODEL FAILED: The component wrapped by [withModel] already has "reducers" in its props!`
+            )
+            Reflect.deleteProperty(store, 'reducers')
+          }
+
+          if (props.hasOwnProperty('effects')) {
+            console.warn(
+              `IMPORT MODEL FAILED: The component wrapped by [withModel] already has "effects" in its props!`
+            )
+            Reflect.deleteProperty(store, 'effects')
+          }
+
+          return <Component {...store} {...props} />
         }
-        return <Component {...store} {...props} />
       }
 
       const displayName = Component.displayName || Component.name
@@ -132,8 +157,6 @@ export class Store<C extends Configs> {
     }
   }
 
-
-
   public withModels = <K extends keyof C, S = undefined>(
     modelNames: K[],
     mapStateToModels?: {
@@ -144,15 +167,19 @@ export class Store<C extends Configs> {
     return Component => {
       const WithModels: React.FC = props => {
         if (props.hasOwnProperty(contextName)) {
-          console.warn(`IMPORT MODELS FAILED: The component wrapped by [withModels] already has "${contextName}" in its props!`)
+          console.warn(
+            `IMPORT MODELS FAILED: The component wrapped by [withModels] already has "${contextName}" in its props!`
+          )
           return <Component {...props} />
         }
+
         const store = {
           [contextName]: modelNames.reduce((s, modelName) => {
             s[modelName] = this.useModel(modelName, mapStateToModels?.[modelName])
             return s
-          }, Object.create(null))
+          }, Object.create(null)),
         }
+
         return <Component {...store} {...props} />
       }
 
