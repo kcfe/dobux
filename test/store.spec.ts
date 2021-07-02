@@ -26,8 +26,10 @@ describe('Store test', () => {
 
     expect(methods).toContain('Provider')
     expect(methods).toContain('withProvider')
+    expect(methods).toContain('withProviderForwardRef')
     expect(methods).toContain('useModel')
     expect(methods).toContain('withModel')
+    expect(methods).toContain('withModels')
     expect(methods).toContain('getState')
   })
 

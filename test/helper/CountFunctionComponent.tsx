@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useImperativeHandle } from 'react'
 import { store } from './store'
 
 export interface CounterProps {
@@ -8,11 +8,11 @@ export interface CounterProps {
 export const Counter: React.FC<CounterProps> = ({ onRender }) => {
   const { state, reducers, effects } = store.useModel('counter')
 
-  if(onRender) {
+  if (onRender) {
     onRender()
   }
 
-  if(effects.increaseAsync.loading) {
+  if (effects.increaseAsync.loading) {
     return <div>Loading ...</div>
   }
 
@@ -29,7 +29,7 @@ export const Counter: React.FC<CounterProps> = ({ onRender }) => {
 export const Counter1: React.FC<CounterProps> = ({ onRender }) => {
   const { state, reducers, effects } = store.useModel('counter')
 
-  if(onRender) {
+  if (onRender) {
     onRender()
   }
 
@@ -42,3 +42,15 @@ export const Counter1: React.FC<CounterProps> = ({ onRender }) => {
     </div>
   )
 }
+
+export const CounterWithRef = store.withProviderForwardRef<any>(
+  React.forwardRef((props, ref) => {
+    useImperativeHandle(ref, () => {
+      return {
+        methodFromUseImperativeHandle: () => true,
+      }
+    })
+
+    return <></>
+  })
+)

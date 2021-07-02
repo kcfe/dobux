@@ -4,6 +4,7 @@ import { act } from '@testing-library/react-hooks'
 import { createStore } from '../src/index'
 import { counter, counter2 } from './helper/model'
 import { createHook } from './helper/createHook'
+import { CounterWithRef } from './helper/CountFunctionComponent'
 import { Counter } from './helper/CountClassComponent'
 import {
   CounterWithContextName,
@@ -55,6 +56,13 @@ describe('Provider test', () => {
     console.error = originalError
   })
 
+  it('support pass ref use withProviderForwardRef', () => {
+    let ref: any
+    render(<CounterWithRef ref={r => (ref = r)} />)
+
+    expect(ref.methodFromUseImperativeHandle).toBeDefined()
+  })
+
   it('should add the store to function component context', () => {
     const store = createStore({
       counter,
@@ -96,7 +104,70 @@ describe('Provider test', () => {
         <Component2 models="what ever" />
       </Provider>
     )
-    expect(console.warn).toHaveBeenCalledWith('IMPORT MODEL FAILED: The component wrapped by [withModel] already has "models" in its props!')
+    expect(console.warn).toHaveBeenCalledWith(
+      'IMPORT MODEL FAILED: The component wrapped by [withModel] already has "models" in its props!'
+    )
+    expect(wrapper2.getByTestId('show-models').innerHTML).toBe('what ever')
+
+    const Component3 = withModel('counter')(Counter)
+    const wrapper3 = render(
+      <Provider>
+        {/* @ts-ignore */}
+        <Component3 state="1" reducers="2" effects="3" />
+      </Provider>
+    )
+    expect(console.warn).toHaveBeenCalledWith(
+      'IMPORT MODEL FAILED: The component wrapped by [withModel] already has "state" in its props!'
+    )
+    expect(console.warn).toHaveBeenCalledWith(
+      'IMPORT MODEL FAILED: The component wrapped by [withModel] already has "reducers" in its props!'
+    )
+    expect(console.warn).toHaveBeenCalledWith(
+      'IMPORT MODEL FAILED: The component wrapped by [withModel] already has "effects" in its props!'
+    )
+
+    const Component4 = withModel('counter', undefined, 'myModel')(CounterWithOtherContextName)
+    const wrapper4 = render(
+      <Provider>
+        {/* @ts-ignore */}
+        <Component4 myProp="what ever" />
+      </Provider>
+    )
+    expect(wrapper4.getByTestId('show-myProp').innerHTML).toBe('what ever')
+    expect(wrapper4.getByTestId('show-myModel').innerHTML).toBe('0')
+
+    console.warn = originalWarn
+  })
+
+  it('should warning when props override', () => {
+    const originalWarn = console.warn
+    console.warn = jest.fn()
+
+    const store = createStore({
+      counter,
+    })
+    const { Provider, withModel } = store
+
+    const Component = withModel('counter')(Counter)
+
+    const wrapper = render(
+      <Provider>
+        <Component />
+      </Provider>
+    )
+
+    expect(wrapper.getByTestId('count').innerHTML).toBe('0')
+
+    const Component2 = withModel('counter', undefined, 'models')(CounterWithSameContextName)
+    const wrapper2 = render(
+      <Provider>
+        {/* @ts-ignore */}
+        <Component2 models="what ever" />
+      </Provider>
+    )
+    expect(console.warn).toHaveBeenCalledWith(
+      'IMPORT MODEL FAILED: The component wrapped by [withModel] already has "models" in its props!'
+    )
     expect(wrapper2.getByTestId('show-models').innerHTML).toBe('what ever')
 
     const Component3 = withModel('counter', undefined, 'myModel')(CounterWithOtherContextName)
@@ -133,18 +204,22 @@ describe('Provider test', () => {
   it('should add specific stores to class component context with custom property', () => {
     const originalWarn = console.warn
     console.warn = jest.fn()
-    
+
     const store = createStore({
       counter,
       counter2,
     })
     const { Provider, withModels } = store
 
-    const Component = withModels(['counter', 'counter2'], {
-      counter: state => ({
-        count: state.count
-      })
-    }, 'forDobux')(CounterWithContextName)
+    const Component = withModels(
+      ['counter', 'counter2'],
+      {
+        counter: state => ({
+          count: state.count,
+        }),
+      },
+      'forDobux'
+    )(CounterWithContextName)
 
     const wrapper = render(
       <Provider>
@@ -162,8 +237,10 @@ describe('Provider test', () => {
         <Component2 models="correct answer" />
       </Provider>
     )
-    
-    expect(console.warn).toHaveBeenCalledWith('IMPORT MODELS FAILED: The component wrapped by [withModels] already has "models" in its props!')
+
+    expect(console.warn).toHaveBeenCalledWith(
+      'IMPORT MODELS FAILED: The component wrapped by [withModels] already has "models" in its props!'
+    )
     expect(wrapper2.getByTestId('show-models').innerHTML).toBe('correct answer')
 
     console.warn = originalWarn
@@ -193,11 +270,14 @@ describe('Provider test', () => {
   })
 
   it('setting autoReset to true, model should be reset when the component unmount', async () => {
-    const store = createStore({
-      counter,
-    }, {
-      autoReset: true
-    })
+    const store = createStore(
+      {
+        counter,
+      },
+      {
+        autoReset: true,
+      }
+    )
     const { Provider, useModel } = store
     const { result, unmount } = createHook(Provider, useModel, 'counter')
 
@@ -218,11 +298,14 @@ describe('Provider test', () => {
   })
 
   it('setting autoReset to specify model, should be reset when the component unmount', async () => {
-    const store = createStore({
-      counter,
-    }, {
-      autoReset: ['counter']
-    })
+    const store = createStore(
+      {
+        counter,
+      },
+      {
+        autoReset: ['counter'],
+      }
+    )
     const { Provider, useModel } = store
     const { result, unmount } = createHook(Provider, useModel, 'counter')
 
