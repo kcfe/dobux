@@ -6,7 +6,8 @@ nav:
   title: API
 toc: menu
 ---
- # API
+
+# API
 
 ## `createModel<RootModel, 'modelName'>()(model)`
 
@@ -429,18 +430,24 @@ const Counter: FC = () => {
 }
 ```
 
-### `store.withModel: (modelName: string, mapStateToModel?: (state: State) => any) => (Component: React.ComponentType) => React.ComponentType`
+### `store.withModel: (modelName: string, mapStateToModel?: (state: State) => any, contextName?: string) => (Component: React.ComponentType) => React.ComponentType`
 
 对于 Class Component 可以通过 `withModel` 高阶组件进行模型的消费，该组件接受两个参数：
 
 - `modelName`：需要消费的模型名称，即执行 `createStore(models)` 时传入对象的 `key` 值 `keyof models`，必传
 - `mapStateToModel`：返回一个自定义的对象作为组件真实的消费模型 `state`，表示当前组件只有在这个返回对象发生改变时才会重新触发组件的渲染，用于性能优化，阻止不必要的渲染，入参为当前模型最新的 `state`，非必传
+- `contextName`：在被包裹组件的 `props` 上挂载的属性名，默认为空，会在被包裹组件的 `props` 上挂载以下三个属性：
+  - `props.state`：当前消费的模型对应的最新状态
+  - `props.reducers`：当前组件可用于修改模型状态的方法
+  - `props.effects`：当前组件可用于执行副作用的方法，其中 `effects.effectName.loading` 记录了异步操作时的状态，可以简化视图层逻辑
 
-调用该高阶组件会在被包裹组件的 `props` 上挂载以下三个属性：
+如果传入了 `contextName` 则对应 `model` 的状态和方法都会在被包裹组件的 `props[contextName][modelName]` 上暴露：
 
-- `props.state`：当前消费的模型对应的最新状态
-- `props.reducers`：当前组件可用于修改模型状态的方法
-- `props.effects`：当前组件可用于执行副作用的方法，其中 `effects.effectName.loading` 记录了异步操作时的状态，可以简化视图层逻辑
+- `props[contextName].state`：当前消费的模型对应的最新状态
+- `props[contextName].reducers`：当前组件可用于修改模型状态的方法
+- `props[contextName].effects`：当前组件可用于执行模型副作用的方法
+
+> 当使用的组件与已有 props 冲突时，则默认不引入 model 中对应的值。比如组件外层传递了 state 属性，那么 dobux 的 state 就不会传入
 
 #### 基本用法
 
@@ -551,19 +558,17 @@ export default withModel('counter', state => {
 
 ### `store.withModels: (modelNames: string[], mapStateToModels?: { [modelName: string]: (state: State) => any) }, contextName = 'models') => (Component: React.ComponentType) => React.ComponentType`
 
-`withModel`只支持传入一个model，而`withModels`支持传入多个models供Class Component消费，该组件接受三个参数：
+`withModel` 只支持传入一个 model，而 `withModels` 支持传入多个 models 供 Class Component 消费，该组件接受三个参数：
 
 - `modelNames`：需要消费的模型名称列表，即执行 `createStore(models)` 时传入对象的 `key` 值 `keyof models`，必传
 - `mapStateToModels`：返回一个自定义的对象作为组件真实的消费模型 `state`，表示当前组件只有在这个返回对象发生改变时才会重新触发组件的渲染，用于性能优化，阻止不必要的渲染，入参为当前模型最新的 `state`，非必传
-- `contextName`：在被包裹组件的`props`上挂载的属性名，默认为`models`，**当使用的`contextName`和组件已有props冲突时，默认不引入model，保留原有`contextName`的值**
+- `contextName`：在被包裹组件的`props`上挂载的属性名，默认为 `models`，**当使用的 `contextName` 和组件已有 props 冲突时，默认不引入 model，保留原有 `contextName` 的值**
 
-
-每个model的状态和方法都会在被包裹组件的 `props[contextName][modelName]` 上暴露：
+每个 model 的状态和方法都会在被包裹组件的 `props[contextName][modelName]` 上暴露：
 
 - `props[contextName].modelA.state`：当前消费的模型`modelA`对应的最新状态
 - `props[contextName].modelA.reducers`：当前组件可用于修改模型`modelA`状态的方法
 - `props[contextName].modelA.effects`：当前组件可用于执行模型`modelA`副作用的方法，其中 `effects.effectName.loading` 记录了异步操作时的状态，可以简化视图层逻辑
-
 
 #### 基本用法
 
@@ -574,7 +579,7 @@ const { withModels } = store
 
 export interface CounterProps {
   forDobux: {
-    [k: keyof RootModel]:  {
+    [k: keyof RootModel]: {
       state: RootModel[k]['state']
       reducers: RootModel[k]['reducers']
       effects: RootModel[k]['effects']
@@ -600,27 +605,29 @@ class Counter extends React.Component<CounterProps> {
       forDobux: {
         counter1: { state: state1, effects: effects1 },
         counter2: { state: state2, effects: effects2 },
-      }
+      },
     } = this.props
 
     if (effects1.increaseAsync.loading || effects2.increaseAsync.loading) {
       return <p className="loading">loading ...</p>
     }
 
-    return <>
-      <div className="counter1">
-        <p>The count1 is: {state1.count}</p>
-        <button onClick={this.handleIncrease('counter1')}>+</button>
-        <button onClick={this.handleDecrease('counter1')}>-</button>
-        <button onClick={this.handleIncreaseAsync('counter1')}>async</button>
-      </div>
-      <div className="counter2">
-        <p>The count2 is: {state2.count}</p>
-        <button onClick={this.handleIncrease('counter2')}>+</button>
-        <button onClick={this.handleDecrease('counter2')}>-</button>
-        <button onClick={this.handleIncreaseAsync('counter2')}>async</button>
-      </div>
-    </>
+    return (
+      <>
+        <div className="counter1">
+          <p>The count1 is: {state1.count}</p>
+          <button onClick={this.handleIncrease('counter1')}>+</button>
+          <button onClick={this.handleDecrease('counter1')}>-</button>
+          <button onClick={this.handleIncreaseAsync('counter1')}>async</button>
+        </div>
+        <div className="counter2">
+          <p>The count2 is: {state2.count}</p>
+          <button onClick={this.handleIncrease('counter2')}>+</button>
+          <button onClick={this.handleDecrease('counter2')}>-</button>
+          <button onClick={this.handleIncreaseAsync('counter2')}>async</button>
+        </div>
+      </>
+    )
   }
 }
 
@@ -638,7 +645,7 @@ const { withModels } = store
 
 export interface CounterProps {
   models: {
-    [k: keyof RootModel]:  {
+    [k: keyof RootModel]: {
       state: RootModel[k]['state']
       reducers: RootModel[k]['reducers']
       effects: RootModel[k]['effects']
@@ -664,27 +671,29 @@ class Counter extends React.Component<CounterProps> {
       models: {
         counter1: { state: state1, effects: effects1 },
         counter2: { state: state2, effects: effects2 },
-      }
+      },
     } = this.props
 
     if (effects1.increaseAsync.loading || effects2.increaseAsync.loading) {
       return <p className="loading">loading ...</p>
     }
 
-    return <>
-      <div className="counter1">
-        <p>The count1 is: {state1.count}</p>
-        <button onClick={this.handleIncrease('counter1')}>+</button>
-        <button onClick={this.handleDecrease('counter1')}>-</button>
-        <button onClick={this.handleIncreaseAsync('counter1')}>async</button>
-      </div>
-      <div className="counter2">
-        <p>The count2 is: {state2.count}</p>
-        <button onClick={this.handleIncrease('counter2')}>+</button>
-        <button onClick={this.handleDecrease('counter2')}>-</button>
-        <button onClick={this.handleIncreaseAsync('counter2')}>async</button>
-      </div>
-    </>
+    return (
+      <>
+        <div className="counter1">
+          <p>The count1 is: {state1.count}</p>
+          <button onClick={this.handleIncrease('counter1')}>+</button>
+          <button onClick={this.handleDecrease('counter1')}>-</button>
+          <button onClick={this.handleIncreaseAsync('counter1')}>async</button>
+        </div>
+        <div className="counter2">
+          <p>The count2 is: {state2.count}</p>
+          <button onClick={this.handleIncrease('counter2')}>+</button>
+          <button onClick={this.handleDecrease('counter2')}>-</button>
+          <button onClick={this.handleIncreaseAsync('counter2')}>async</button>
+        </div>
+      </>
+    )
   }
 }
 
@@ -699,7 +708,7 @@ export default withModels(['counter1', 'counter2'], {
     return {
       count: state.count,
     }
-  }
+  },
 })(Count)
 ```
 
