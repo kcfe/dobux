@@ -105,11 +105,20 @@ export class Store<C extends Configs> {
 
   public withModel = <K extends keyof C, S = undefined>(
     modelName: K,
-    mapStateToModel?: MapStateToModel<Models<C>[K], S>
+    mapStateToModel?: MapStateToModel<Models<C>[K], S>,
+    contextName?: string
   ): HOC => {
     return Component => {
       const WithModel: React.FC = props => {
         const store = this.useModel(modelName, mapStateToModel)
+        if (contextName && typeof contextName === 'string') {
+          if (props.hasOwnProperty(contextName)) {
+            console.warn(`IMPORT MODEL FAILED: The component wrapped by [withModel] already has "${contextName}" in its props!`)
+            return <Component {...props} />
+          } else {
+            return <Component {...{ [contextName]: store }} {...props} />
+          }
+        }
         return <Component {...store} {...props} />
       }
 
@@ -123,6 +132,39 @@ export class Store<C extends Configs> {
     }
   }
 
+
+
+  public withModels = <K extends keyof C, S = undefined>(
+    modelNames: K[],
+    mapStateToModels?: {
+      [p in keyof C]?: MapStateToModel<Models<C>[p], S>
+    },
+    contextName = 'models'
+  ): HOC => {
+    return Component => {
+      const WithModels: React.FC = props => {
+        if (props.hasOwnProperty(contextName)) {
+          console.warn(`IMPORT MODELS FAILED: The component wrapped by [withModels] already has "${contextName}" in its props!`)
+          return <Component {...props} />
+        }
+        const store = {
+          [contextName]: modelNames.reduce((s, modelName) => {
+            s[modelName] = this.useModel(modelName, mapStateToModels?.[modelName])
+            return s
+          }, Object.create(null))
+        }
+        return <Component {...store} {...props} />
+      }
+
+      const displayName = Component.displayName || Component.name
+
+      WithModels.displayName = `${displayName}-with-models`
+
+      hoistNonReactStatics(WithModels, Component)
+
+      return WithModels
+    }
+  }
   public getState(): ModelState<C>
   public getState<K extends keyof C>(modelName: K): C[K]['state']
   public getState<K extends keyof C>(modelName?: K) {
