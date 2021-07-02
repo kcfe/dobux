@@ -1,20 +1,10 @@
-## [Changes](https://github.com/kcfe/dobux/compare/v1.0.6...v1.1.0) (2021-06-04)
-
-
-### ⚡ Performance Improvements
-
-* add hocs display name ([e96ddf3](https://github.com/kcfe/dobux/commit/e96ddf3487ae6c68ebc6d0c0d5e08d82b0ced35a))
+## [Changes](https://github.com/kcfe/dobux/compare/v1.1.0...v1.2.0) (2021-07-02)
 
 
 ### ✨ Features
 
-* support with provider forward ref, closes [#4](https://github.com/kcfe/dobux/issues/4) ([08d8bb0](https://github.com/kcfe/dobux/commit/08d8bb0ce40dfc94db577303e9105c01c76e3b35))
-
-
-### 🐛 Bug Fixes
-
-* create model ts type ([118add3](https://github.com/kcfe/dobux/commit/118add310cecccccf677dff4e720cbf00e2a6992))
-* with provider generic ([bdaf332](https://github.com/kcfe/dobux/commit/bdaf3321628ebfdc9825c0245de3aea7807d2115))
+* add store.withModels to support multi models in Class component ([0915dc9](https://github.com/kcfe/dobux/commit/0915dc9076ee8eed147aa29f5cce9f5864bf1ce9))
+* store.withModel support specific [contextName] ([3b1158e](https://github.com/kcfe/dobux/commit/3b1158e1ee24e6d1c5dc7ff44c89cada351d62e5))
 
 
 
