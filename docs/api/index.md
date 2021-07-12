@@ -61,41 +61,76 @@ const counter = createModel<RootModel, 'counter'>()({
 
 `Dobux` 提供了三个内置的 `reducer`，可以很方便的进行状态更新，比如更新（重置）表单的字段
 
-`reducers.setValue(key: K extends keyof State, value: State[K])`
+`reducers.setValue(key: K extends keyof State, value: State[K] | ((prevState: S[K]) => S[K]))`
 
 更新指定的状态
 
 - `key`：需要更新的字段名称，属于 `Object.keys(state)` 其中的一个，必传
-- `value`：修改后的值，必传
+- `value`：修改后的字面量或一个更新函数（类似调用 React.setState 时传入的回调函数），必传
 
 ```ts
-reducers.setValue('count', 10)
+// 字面量形式
+reducers.setValue('count', 1)
+// 回调函数形式
+reducers.setValue('count', prevState => {
+  return prevState - 1
+})
 
+// 字面量形式
 reducers.setValue('userInfo', {
   name: 'dobux',
-  age: 1,
+  age: 0,
+})
+// 回调函数形式
+reducers.setValue('userInfo', prevState => {
+  return {
+    ...prevState,
+    age: 1,
+  }
 })
 ```
 
-`reducers.setValues(partialState: Partial<State>)`
+> 注：如果需要拿到 **最新状态** 需要使用回调函数的形式
+
+`reducers.setValues(state: Partial<State> | ((prevState: S) => S))`
 
 批量状态更新
 
-- `partialState`：对应模型状态的部分数据，需要注意的是内部只会批量更新第一层数据，如果需要更新深层的数据，需要手动合并，非必传
+- `state`：修改后的字面量或一个更新函数（类似调用 React.setState 时传入的回调函数），必传
 
 ```ts
+// 字面量形式
 reducers.setValues({
-  count: 5,
+  count: 1,
+})
+// 回调函数形式
+reducers.setValues(prevState => {
+  return {
+    count: 1,
+  }
 })
 
+// 字面量形式
 reducers.setValues({
   count: 5,
   userInfo: {
-    ...state.userInfo,
     name: 'dobux',
+    age: 1,
   },
 })
+// 回调函数形式
+reducers.setValues(prevState => {
+  return {
+    count: 1,
+    userInfo: {
+      ...prevState.userInfo,
+      name: 'dobux',
+    },
+  }
+})
 ```
+
+> 注：框架内部只会批量更新第一层数据，如果需要更新深层的数据，需要手动合并
 
 `reducers.reset(key?: K extends keyof State)`
 
