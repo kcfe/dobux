@@ -132,12 +132,9 @@ export class Model<C extends ModelConfig> {
     )
 
     const state = mapStateToModel(model.state)
+    model.state = state
 
-    return {
-      state,
-      reducers: model.reducers,
-      effects: model.effects,
-    }
+    return model
   }
 
   private produceState(state: C['state'], reducer: ConfigReducer, payload: any = []): C['state'] {
@@ -184,9 +181,17 @@ export class Model<C extends ModelConfig> {
     // internal reducer setValue
     if (!reducers.setValue) {
       reducers.setValue = (key, value): void => {
-        const newState = this.produceState(this.model.state, draft => {
-          draft[key] = value
-        })
+        let newState
+
+        if (isFunction(value)) {
+          newState = this.produceState(this.model.state, draft => {
+            draft[key] = value(this.model.state[key])
+          })
+        } else {
+          newState = this.produceState(this.model.state, draft => {
+            draft[key] = value
+          })
+        }
 
         this.model.state = newState
         this.notify('setValue', newState)
@@ -196,11 +201,17 @@ export class Model<C extends ModelConfig> {
     // internal reducer setValues
     if (!reducers.setValues) {
       reducers.setValues = (partialState): void => {
-        const newState = this.produceState(this.model.state, draft => {
-          Object.keys(partialState).forEach(key => {
-            draft[key] = partialState[key]
+        let newState
+
+        if (isFunction(partialState)) {
+          newState = partialState(this.model.state)
+        } else {
+          newState = this.produceState(this.model.state, draft => {
+            Object.keys(partialState).forEach(key => {
+              draft[key] = partialState[key]
+            })
           })
-        })
+        }
 
         this.model.state = newState
 

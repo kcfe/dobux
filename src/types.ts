@@ -66,9 +66,19 @@ interface ModelEffectState {
   readonly loading: boolean
 }
 
+interface BuildInReducerSetValue<S = any> {
+  <K extends keyof S>(key: K, value: (prevState: S[K]) => S[K]): void
+  <K extends keyof S>(key: K, value: S[K]): void
+}
+
+interface BuildInReducerSetValues<S = any> {
+  (state: (prevState: S) => S): void
+  (partialState: Partial<S>): void
+}
+
 interface BuildInReducers<S = any> {
-  setValue: <K extends keyof S>(key: K, value: S[K]) => void
-  setValues: (state: Partial<S>) => void
+  setValue: <K extends keyof S>(key: K, value: S[K] | ((prevState: S[K]) => S[K])) => void
+  setValues: (state: Partial<S> | ((prevState: S) => S)) => void
   reset: <K extends keyof S>(key?: K) => void
 }
 

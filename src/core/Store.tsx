@@ -192,6 +192,7 @@ export class Store<C extends Configs> {
       return WithModels
     }
   }
+
   public getState(): ModelState<C>
   public getState<K extends keyof C>(modelName: K): C[K]['state']
   public getState<K extends keyof C>(modelName?: K) {

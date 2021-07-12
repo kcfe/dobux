@@ -61,7 +61,7 @@ describe('reducer test', () => {
       result.current.reducers.setValue('data', 1)
     })
 
-    expect(result.current.state.data).toBeUndefined()
+    expect(result.current.state.data).toBe(1)
   })
 
   it('should provider build-in reducers when no customize passed', () => {
