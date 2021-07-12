@@ -134,7 +134,11 @@ export class Model<C extends ModelConfig> {
     const state = mapStateToModel(model.state)
     model.state = state
 
-    return model
+    return {
+      state,
+      reducers: model.reducers,
+      effects: model.effects
+    }
   }
 
   private produceState(state: C['state'], reducer: ConfigReducer, payload: any = []): C['state'] {

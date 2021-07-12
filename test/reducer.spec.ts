@@ -61,7 +61,7 @@ describe('reducer test', () => {
       result.current.reducers.setValue('data', 1)
     })
 
-    expect(result.current.state.data).toBe(1)
+    expect(result.current.state.data).toBeUndefined()
   })
 
   it('should provider build-in reducers when no customize passed', () => {
@@ -82,6 +82,13 @@ describe('reducer test', () => {
     })
     expect(result.current.state.count).toBe(1)
 
+    act(() => {
+      setValue('count', (prevState: number) => {
+        return prevState - 1
+      })
+    })
+    expect(result.current.state.count).toBe(0)
+
     expect(setValues.length).toBe(1)
     act(() => {
       setValues({
@@ -89,6 +96,15 @@ describe('reducer test', () => {
       })
     })
     expect(result.current.state.count).toBe(10)
+
+    act(() => {
+      setValues((prevState: Record<string, any>) => {
+        return {
+          count: prevState.count - 10,
+        }
+      })
+    })
+    expect(result.current.state.count).toBe(0)
 
     expect(reset.length).toBe(1)
     act(() => {
