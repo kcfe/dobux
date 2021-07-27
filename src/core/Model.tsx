@@ -132,7 +132,7 @@ export class Model<C extends ModelConfig> {
     )
 
     const state = mapStateToModel(model.state)
-    model.state = state
+    // model.state = state
 
     return {
       state,
