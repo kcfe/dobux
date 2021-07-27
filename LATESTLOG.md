@@ -1,9 +1,9 @@
-## [Changes](https://github.com/kcfe/dobux/compare/v1.2.0...v1.3.0) (2021-07-12)
+## [1.3.1-beta.0](https://github.com/kcfe/dobux/compare/v1.3.0...v1.3.1-beta.0) (2021-07-27)
 
 
-### ✨ Features
+### 🐛 Bug Fixes
 
-* support setValue & setValues pass function ([7877f83](https://github.com/kcfe/dobux/commit/7877f83c9495ba49ff9c11727253859635e5ca03))
+* modify state ([76c214f](https://github.com/kcfe/dobux/commit/76c214feb7d55e86f587e0c49fb30a40a8c58cd4))
 
 
 
