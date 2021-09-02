@@ -14,6 +14,7 @@ import {
   HOC,
   ModelsState,
   ModelsReducers,
+  ModelsEffects,
 } from '../types'
 
 type StoreModels<C extends Configs> = {
@@ -29,6 +30,7 @@ export class Store<C extends Configs> {
 
     this.getState = this.getState.bind(this)
     this.getReducers = this.getReducers.bind(this)
+    this.getEffects = this.getEffects.bind(this)
   }
 
   public Provider: StoreProvider = ({ children }): React.ReactElement => {
@@ -89,18 +91,18 @@ export class Store<C extends Configs> {
     modelName: K,
     mapStateToModel: MapStateToModel<Models<C>[K], S> = (state: S): S => state
   ): Models<C, S, R, E>[K] => {
-    invariant(!isUndefined(modelName), `[store.useModel] Expected the modelName not to be empty`)
+    invariant(!isUndefined(modelName), `[store.useModel] Expected the modelName not to be empty.`)
 
     const modelNames = Object.keys(this.configs)
 
     invariant(
       modelNames.indexOf(modelName as string) > -1,
-      `[store.useModel] Expected the modelName to be one of ${modelNames}, but got ${modelName}`
+      `[store.useModel] Expected the modelName to be one of ${modelNames}, but got ${modelName}.`
     )
 
     invariant(
       isUndefined(mapStateToModel) || isFunction(mapStateToModel),
-      `[store.useModel] Expected the mapStateToModel to be function or undefined, but got ${typeof mapStateToModel}`
+      `[store.useModel] Expected the mapStateToModel to be function or undefined, but got ${typeof mapStateToModel}.`
     )
 
     return this.models[modelName].useModel(mapStateToModel)
@@ -118,7 +120,7 @@ export class Store<C extends Configs> {
         if (contextName && typeof contextName === 'string') {
           if (props.hasOwnProperty(contextName)) {
             console.warn(
-              `IMPORT MODEL FAILED: The component wrapped by [withModel] already has "${contextName}" in its props!`
+              `IMPORT MODEL FAILED: The component wrapped by [withModel] already has "${contextName}" in its props.`
             )
             return <Component {...props} />
           } else {
@@ -127,21 +129,21 @@ export class Store<C extends Configs> {
         } else {
           if (props.hasOwnProperty('state')) {
             console.warn(
-              `IMPORT MODEL FAILED: The component wrapped by [withModel] already has "state" in its props!`
+              `IMPORT MODEL FAILED: The component wrapped by [withModel] already has "state" in its props.`
             )
             Reflect.deleteProperty(store, 'state')
           }
 
           if (props.hasOwnProperty('reducers')) {
             console.warn(
-              `IMPORT MODEL FAILED: The component wrapped by [withModel] already has "reducers" in its props!`
+              `IMPORT MODEL FAILED: The component wrapped by [withModel] already has "reducers" in its props.`
             )
             Reflect.deleteProperty(store, 'reducers')
           }
 
           if (props.hasOwnProperty('effects')) {
             console.warn(
-              `IMPORT MODEL FAILED: The component wrapped by [withModel] already has "effects" in its props!`
+              `IMPORT MODEL FAILED: The component wrapped by [withModel] already has "effects" in its props.`
             )
             Reflect.deleteProperty(store, 'effects')
           }
@@ -171,7 +173,7 @@ export class Store<C extends Configs> {
       const WithModels: React.FC = props => {
         if (props.hasOwnProperty(contextName)) {
           console.warn(
-            `IMPORT MODELS FAILED: The component wrapped by [withModels] already has "${contextName}" in its props!`
+            `IMPORT MODELS FAILED: The component wrapped by [withModels] already has "${contextName}" in its props.`
           )
           return <Component {...props} />
         }
@@ -204,7 +206,7 @@ export class Store<C extends Configs> {
 
       invariant(
         modelNames.indexOf(modelName as string) > -1,
-        `[store.getState] Expected the modelName to be one of ${modelNames}, but got ${modelName}`
+        `[store.getState] Expected the modelName to be one of ${modelNames}, but got ${modelName}.`
       )
 
       return this.rootModel[modelName].state
@@ -226,7 +228,7 @@ export class Store<C extends Configs> {
 
       invariant(
         modelNames.indexOf(modelName as string) > -1,
-        `[store.getReducers] Expected the modelName to be one of ${modelNames}, but got ${modelName}`
+        `[store.getReducers] Expected the modelName to be one of ${modelNames}, but got ${modelName}.`
       )
 
       return this.rootModel[modelName].reducers
@@ -240,18 +242,40 @@ export class Store<C extends Configs> {
     }
   }
 
+  public getEffects(): ModelsEffects<C>
+  public getEffects<K extends keyof C>(modelName: K): ModelsEffects<C>[K]
+  public getEffects<K extends keyof C>(modelName?: K) {
+    if (modelName) {
+      const modelNames = Object.keys(this.configs)
+
+      invariant(
+        modelNames.indexOf(modelName as string) > -1,
+        `[store.getEffects] Expected the modelName to be one of ${modelNames}, but got ${modelName}.`
+      )
+
+      return this.rootModel[modelName].effects
+    } else {
+      const effects = Object.keys(this.rootModel).reduce((effects, modelName) => {
+        effects[modelName] = this.rootModel[modelName].effects
+        return effects
+      }, Object.create(null))
+
+      return effects
+    }
+  }
+
   private initModels(configs: C, options: Required<StoreOptions<C>>): StoreModels<C> {
     const { name: storeName, autoReset, devtools } = options
     const modelNames = Object.keys(configs)
 
-    invariant(modelNames.length > 0, `createStore requires at least one configuration`)
+    invariant(modelNames.length > 0, `createStore requires at least one configuration.`)
 
     return modelNames.reduce((models, name) => {
       const { state, reducers, effects } = configs[name]
 
       invariant(
         !isUndefined(state) && !isNull(state),
-        `[createStore] Expected the state of ${name} not to be undefined`
+        `[createStore] Expected the state of ${name} not to be undefined.`
       )
 
       const config = Object.create(null)

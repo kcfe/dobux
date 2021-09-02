@@ -25,8 +25,13 @@ export const config = {
   },
   effects: (store: any, rootStore: any) => ({
     async increaseAsync() {
-      await wait(500)
+      await wait(10)
       store.reducers.increase()
+    },
+
+    async decreaseAsync() {
+      await wait(10)
+      store.reducers.decrease()
     },
 
     async fetchError() {
