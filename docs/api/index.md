@@ -754,14 +754,52 @@ export default withModels(['counter1', 'counter2'], {
 - `modelName`：模型名称，非必传，如果传入会返回对应模型的 `state`，如果没传入会返回整个 `store` 对应的多个模型的 `state`
 
 ```tsx | pure
-import { getState } from './store'
+import { store } from './store'
 
-const rootState = getState()
+const rootState = store.getState()
 // { header: { value: ''}, undoList: { items: [{ content: 'Learn dobux' }] } }
 
-const headerState = getState('header')
+const headerState = store.getState('header')
 // { value: ''}
 
-const undoListState = getState('header')
+const undoListState = store.getState('undoList')
 // { items: [{ content: 'Learn dobux' }] }
+```
+
+### `store.getReducers: (modelName?: string) => ModelReducers`
+
+获取指定（所有）模型的 `reducers`，可以在组件外部使用。可以解决在闭包中获取指定的 `reducers` 或者想要只使用 `reducers` 而不订阅更新的场景
+
+- `modelName`：模型名称，非必传，如果传入会返回对应模型的 `reducers`，如果没传入会返回整个 `store` 对应的多个模型的 `reducers`
+
+```tsx | pure
+import { store } from './store'
+
+const rootReducers = store.getReducers()
+// { header: { changeValue, setValue, setValues, reset }, undoList: { addItem, deleteItem, toggleItem, setValue, setValues, reset } }
+
+const headerReducers = store.getReducers('header')
+// { changeValue, setValue, setValues, reset }
+
+const undoListReducers = store.getReducers('undoList')
+// { addItem, deleteItem, toggleItem, setValue, setValues, reset }
+```
+
+### `store.getEffects: (modelName?: string) => ModelEffects`
+
+获取指定（所有）模型的 `effects`，可以在组件外部使用。可以解决在闭包中获取指定的 `effects` 或者想要只使用 `effects` 而不订阅更新的场景
+
+- `modelName`：模型名称，非必传，如果传入会返回对应模型的 `effects`，如果没传入会返回整个 `store` 对应的多个模型的 `effects`
+
+```tsx | pure
+import { store } from './store'
+
+const rootEffects = store.getEffects()
+// { header: { addUndoItem }, undoList: { fetchUndoList } }
+
+const headerEffects = store.getEffects('header')
+// { addUndoItem }
+
+const undoListEffects = store.getEffects('undoList')
+// { fetchUndoList } 
 ```
