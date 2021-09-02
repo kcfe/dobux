@@ -31,6 +31,7 @@ describe('Store test', () => {
     expect(methods).toContain('withModel')
     expect(methods).toContain('withModels')
     expect(methods).toContain('getState')
+    expect(methods).toContain('getReducers')
   })
 
   it('state can be primitive value', () => {

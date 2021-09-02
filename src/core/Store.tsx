@@ -11,8 +11,9 @@ import {
   StoreProvider,
   MapStateToModel,
   Models,
-  ModelState,
   HOC,
+  ModelsState,
+  ModelsReducers,
 } from '../types'
 
 type StoreModels<C extends Configs> = {
@@ -25,7 +26,9 @@ export class Store<C extends Configs> {
 
   constructor(private configs: C, options: Required<StoreOptions<C>>) {
     this.models = this.initModels(configs, options)
+
     this.getState = this.getState.bind(this)
+    this.getReducers = this.getReducers.bind(this)
   }
 
   public Provider: StoreProvider = ({ children }): React.ReactElement => {
@@ -193,11 +196,12 @@ export class Store<C extends Configs> {
     }
   }
 
-  public getState(): ModelState<C>
-  public getState<K extends keyof C>(modelName: K): C[K]['state']
+  public getState(): ModelsState<C>
+  public getState<K extends keyof C>(modelName: K): ModelsState<C>[K]
   public getState<K extends keyof C>(modelName?: K) {
     if (modelName) {
       const modelNames = Object.keys(this.configs)
+
       invariant(
         modelNames.indexOf(modelName as string) > -1,
         `[store.getState] Expected the modelName to be one of ${modelNames}, but got ${modelName}`
@@ -211,6 +215,28 @@ export class Store<C extends Configs> {
       }, Object.create(null))
 
       return state
+    }
+  }
+
+  public getReducers(): ModelsReducers<C>
+  public getReducers<K extends keyof C>(modelName: K): ModelsReducers<C>[K]
+  public getReducers<K extends keyof C>(modelName?: K) {
+    if (modelName) {
+      const modelNames = Object.keys(this.configs)
+
+      invariant(
+        modelNames.indexOf(modelName as string) > -1,
+        `[store.getReducers] Expected the modelName to be one of ${modelNames}, but got ${modelName}`
+      )
+
+      return this.rootModel[modelName].reducers
+    } else {
+      const reducers = Object.keys(this.rootModel).reduce((reducers, modelName) => {
+        reducers[modelName] = this.rootModel[modelName].reducers
+        return reducers
+      }, Object.create(null))
+
+      return reducers
     }
   }
 

@@ -76,7 +76,7 @@ interface BuildInReducerSetValues<S = any> {
   (partialState: Partial<S>): void
 }
 
-interface BuildInReducers<S = any> {
+export interface BuildInReducers<S = any> {
   setValue: <K extends keyof S>(key: K, value: S[K] | ((prevState: S[K]) => S[K])) => void
   setValues: (state: Partial<S> | ((prevState: S) => S)) => void
   reset: <K extends keyof S>(key?: K) => void
@@ -122,9 +122,18 @@ export type Models<C extends Configs, S = undefined, R = undefined, E = undefine
   }
 }
 
-export type ModelState<C extends Configs> = {
-  [K in keyof C]: C[K]['state']
+export type ModelsState<C extends Configs, S = undefined, R = undefined, E = undefined> = {
+  [K in keyof C]: Model<C[K], S, R, E>['state']
 }
+
+export type ModelsReducers<C extends Configs, S = undefined, R = undefined, E = undefined> = {
+  [K in keyof C]: Model<C[K], S, R, E>['reducers']
+}
+
+export type ModelsEffects<C extends Configs, S = undefined, R = undefined, E = undefined> = {
+  [K in keyof C]: Model<C[K], S, R, E>['effects']
+}
+
 export interface ModelConfig<S = any> {
   state: S
   reducers: ConfigReducers<S>
