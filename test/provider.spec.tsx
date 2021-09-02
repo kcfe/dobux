@@ -105,7 +105,7 @@ describe('Provider test', () => {
       </Provider>
     )
     expect(console.warn).toHaveBeenCalledWith(
-      'IMPORT MODEL FAILED: The component wrapped by [withModel] already has "models" in its props!'
+      'IMPORT MODEL FAILED: The component wrapped by [withModel] already has "models" in its props.'
     )
     expect(wrapper2.getByTestId('show-models').innerHTML).toBe('what ever')
 
@@ -117,13 +117,13 @@ describe('Provider test', () => {
       </Provider>
     )
     expect(console.warn).toHaveBeenCalledWith(
-      'IMPORT MODEL FAILED: The component wrapped by [withModel] already has "state" in its props!'
+      'IMPORT MODEL FAILED: The component wrapped by [withModel] already has "state" in its props.'
     )
     expect(console.warn).toHaveBeenCalledWith(
-      'IMPORT MODEL FAILED: The component wrapped by [withModel] already has "reducers" in its props!'
+      'IMPORT MODEL FAILED: The component wrapped by [withModel] already has "reducers" in its props.'
     )
     expect(console.warn).toHaveBeenCalledWith(
-      'IMPORT MODEL FAILED: The component wrapped by [withModel] already has "effects" in its props!'
+      'IMPORT MODEL FAILED: The component wrapped by [withModel] already has "effects" in its props.'
     )
 
     const Component4 = withModel('counter', undefined, 'myModel')(CounterWithOtherContextName)
@@ -166,7 +166,7 @@ describe('Provider test', () => {
       </Provider>
     )
     expect(console.warn).toHaveBeenCalledWith(
-      'IMPORT MODEL FAILED: The component wrapped by [withModel] already has "models" in its props!'
+      'IMPORT MODEL FAILED: The component wrapped by [withModel] already has "models" in its props.'
     )
     expect(wrapper2.getByTestId('show-models').innerHTML).toBe('what ever')
 
@@ -239,7 +239,7 @@ describe('Provider test', () => {
     )
 
     expect(console.warn).toHaveBeenCalledWith(
-      'IMPORT MODELS FAILED: The component wrapped by [withModels] already has "models" in its props!'
+      'IMPORT MODELS FAILED: The component wrapped by [withModels] already has "models" in its props.'
     )
     expect(wrapper2.getByTestId('show-models').innerHTML).toBe('correct answer')
 
