@@ -319,8 +319,7 @@ describe('Provider test', () => {
     unmount()
 
     const hook = createHook(Provider, useModel, 'counter')
-    console.log('hook', hook)
-    // console.log('hook.result.current', hook.result.current)
+ 
     expect(hook.result.current.state.count).toBe(0)
   })
 })
