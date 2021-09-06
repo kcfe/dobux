@@ -14,17 +14,12 @@ function createUseContext(context: Context<ModelContextProps>) {
 
 export function createProvider(model: ContextPropsModel): ReturnType {
   const Context = createContext<ModelContextProps>(NO_PROVIDER)
+  const value = {
+    model,
+  }
 
   const Provider: React.FC = props => {
-    return (
-      <Context.Provider
-        value={{
-          model,
-        }}
-      >
-        {props.children}
-      </Context.Provider>
-    )
+    return <Context.Provider value={value}>{props.children}</Context.Provider>
   }
 
   return [Provider, createUseContext(Context)]
