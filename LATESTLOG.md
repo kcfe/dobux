@@ -1,9 +1,9 @@
-## [Changes](https://github.com/kcfe/dobux/compare/v1.4.0...v1.4.1) (2021-09-06)
+## [1.4.2-beta.0](https://github.com/kcfe/dobux/compare/v1.4.1...v1.4.2-beta.0) (2021-09-08)
 
 
 ### 🐛 Bug Fixes
 
-* provider rerender ([88ddfef](https://github.com/kcfe/dobux/commit/88ddfefc7e5cb1bd2eb8b2b1d6664e8c86b9312c))
+* delete effect subscribe error ([b5ff249](https://github.com/kcfe/dobux/commit/b5ff249fa8ed137b07e24999a09815a961291794))
 
 
 
