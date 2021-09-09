@@ -69,12 +69,13 @@
     "immer": "^6.0.9"
   },
   "peerDependencies": {
-    "react": "^16.8.3 || ^17"
+    "react": "^16.8.3 || ^17",
+    "react-dom": "^16.8.3 || ^17"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
-    "@eljs/release": "^0.2.0",
+    "@eljs/release": "^0.3.1",
     "@rollup/plugin-typescript": "^5.0.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
@@ -90,7 +91,7 @@
     "codecov": "^3.8.1",
     "concurrently": "^5.3.0",
     "cross-env": "^7.0.2",
-    "dumi": "^1.1.23",
+    "dumi": "^1.1.26",
     "eslint": "^7.3.1",
     "husky": "^4.3.0",
     "jest": "^26.6.3",
