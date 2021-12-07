@@ -23,6 +23,12 @@ export const counter = createModel<RootModel, 'counter'>()({
     async increaseAsync() {
       await wait(1000)
       model.reducers.increase()
+      return model.effects.decreaseAsync() as number
+    },
+
+    async decreaseAsync() {
+      await wait(1000)
+      return -1
     },
   }),
 })

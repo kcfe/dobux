@@ -4,6 +4,70 @@
 
 由于 `typescript` 的类型推断是建立在静态检查的前提下，是需要根据用户定义的字面量推断出它的结构，在使用 `createModel` 创建模型的时候，模型内部的 `reducers` 会依赖 `state`，`effects` 会依赖 `model` 和 `rootModel`，内部本身就存在一个循环引用。由于文件之间 `import` 的是静态类型而不是实际的代码，因此不会影响代码本身的执行逻辑，只是通过这种方式帮助推断出类型。如果项目不使用 `typescript` 或者不需要推断出上述的类型，可以避免使用这种类型循环引用
 
+### 一个 Effect 中返回另一个 Effect 的执行函数类型推断失效
+
+```ts
+export const counter = createModel<RootModel, 'counter'>()({
+  state: {
+    count: 0,
+  },
+  reducers: {
+    increase(state) {
+      state.count += 1
+    },
+    decrease(state) {
+      state.count -= 1
+    },
+  },
+  effects: (model, rootModel) => ({
+    async increaseAsync() {
+      await wait(1000)
+      model.reducers.increase()
+      // 出现循环引用，类型推断错误
+      return model.effects.decreaseAsync()
+    },
+
+    async decreaseAsync() {
+      await wait(1000)
+      return -1
+    }, 
+  }),
+})
+```
+
+这是因为类型推断出现了 **循环引用** 的情况，解决方案是 **手动指定 effect 返回类型，打破循环依赖**
+
+```diff
+export const counter = createModel<RootModel, 'counter'>()({
+  state: {
+    count: 0,
+  },
+  reducers: {
+    increase(state) {
+      state.count += 1
+    },
+    decrease(state) {
+      state.count -= 1
+    },
+  },
+  effects: (model, rootModel) => ({
+    async increaseAsync() {
+      await wait(1000)
+      model.reducers.increase()
++      // 手动指定 effect 返回类型，打破循环依赖
++      const result: number = await model.effects.decreaseAsync()
++      return result
+-      return model.effects.decreaseAsync()
+    },
+
+    async decreaseAsync() {
+      await wait(1000)
+      return -1
+    }, 
+  }),
+})
+```
+
 ### 路由之间切换时 Model 的状态会一直保存，但是业务需要自动卸载？
 
 使用 `Dobux` 创建的 `store` 实例会常驻于浏览器的中内存，默认情况下当组件卸载是不会自动重置的，如果想要在组件卸载的时候重置数据可以通过 `createStore` 的第二个参数控制，[详见](/api#store--createstoremodels-options)
