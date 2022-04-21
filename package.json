@@ -1,6 +1,6 @@
 {
   "name": "dobux",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Lightweight responsive state management solution",
   "files": [
     "cjs",

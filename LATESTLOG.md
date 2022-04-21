@@ -1,3 +1,9 @@
-## [Changes](https://github.com/kcfe/dobux/compare/v1.4.2-beta.0...v1.4.2) (2021-09-09)
+## [Changes](https://github.com/kcfe/dobux/compare/v1.4.2...v1.4.3) (2022-04-21)
 
- **Note:** Version bump only for package dobux
+
+### 🐛 Bug Fixes
+
+* build in set value reducer pass function ([c7cb196](https://github.com/kcfe/dobux/commit/c7cb196f569b1759e4f2c1801c90228e564b39d8))
+
+
+
