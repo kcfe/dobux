@@ -78,7 +78,7 @@ interface BuildInReducerSetValues<S = any> {
 
 export interface BuildInReducers<S = any> {
   setValue: <K extends keyof S>(key: K, value: S[K] | ((prevState: S[K]) => S[K])) => void
-  setValues: (state: Partial<S> | ((prevState: S) => S)) => void
+  setValues: (state: Partial<S> | ((prevState: S) => S | undefined)) => void
   reset: <K extends keyof S>(key?: K) => void
 }
 

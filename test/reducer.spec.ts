@@ -99,9 +99,80 @@ describe('reducer test', () => {
 
     act(() => {
       setValues((prevState: Record<string, any>) => {
+        prevState.count = prevState.count - 10
+      })
+    })
+    expect(result.current.state.count).toBe(0)
+
+    act(() => {
+      setValues((prevState: Record<string, any>) => {
         return {
-          count: prevState.count - 10,
+          count: prevState.count + 1,
         }
+      })
+    })
+    expect(result.current.state.count).toBe(1)
+
+    expect(reset.length).toBe(1)
+    act(() => {
+      reset('count')
+    })
+    expect(result.current.state.count).toBe(0)
+
+    act(() => {
+      setValues({
+        data: 1,
+        count: 10,
+      })
+    })
+
+    expect(result.current.state.count).toBe(10)
+    expect(result.current.state.data).toBe(1)
+
+    act(() => {
+      reset()
+    })
+
+    expect(result.current.state.count).toBe(0)
+    expect(result.current.state.data).toEqual({})
+  })
+
+  it('should provider build-in reducers when no customize passed', () => {
+    const store = createStore({
+      counter,
+    })
+    const { Provider, useModel } = store
+
+    const { result } = createHook(Provider, useModel, 'counter')
+
+    const setValue = result.current.reducers.setValue
+    const setValues = result.current.reducers.setValues
+    const reset = result.current.reducers.reset
+
+    expect(setValue.length).toBe(2)
+    act(() => {
+      setValue('count', 1)
+    })
+    expect(result.current.state.count).toBe(1)
+
+    act(() => {
+      setValue('count', (prevState: number) => {
+        return prevState - 1
+      })
+    })
+    expect(result.current.state.count).toBe(0)
+
+    expect(setValues.length).toBe(1)
+    act(() => {
+      setValues({
+        count: 10,
+      })
+    })
+    expect(result.current.state.count).toBe(10)
+
+    act(() => {
+      setValues((prevState: Record<string, any>) => {
+        prevState.count = prevState.count - 10
       })
     })
     expect(result.current.state.count).toBe(0)

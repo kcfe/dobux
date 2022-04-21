@@ -137,7 +137,7 @@ export class Model<C extends ModelConfig> {
     return {
       state,
       reducers: model.reducers,
-      effects: model.effects
+      effects: model.effects,
     }
   }
 
@@ -208,7 +208,7 @@ export class Model<C extends ModelConfig> {
         let newState
 
         if (isFunction(partialState)) {
-          newState = partialState(this.model.state)
+          newState = this.produceState(this.model.state, partialState)
         } else {
           newState = this.produceState(this.model.state, draft => {
             Object.keys(partialState).forEach(key => {

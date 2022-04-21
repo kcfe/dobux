@@ -22,7 +22,7 @@
     "watch:ts": "tsc --watch",
     "docs:dev": "dumi dev docs",
     "docs:build": "dumi build docs",
-    "lint": "eslint 'src/**/*.@(js|ts)' --fix && npm-ensure -t deps",
+    "lint": "eslint 'src/**/*.@(js|ts)' --fix",
     "prettier": "prettier --write 'src/**/*.@(js|ts)'",
     "test": "npm run test:once -- --watch",
     "test:once": "jest --runInBand --forceExit --colors --coverage",
@@ -53,16 +53,8 @@
     "{src,test}/**/*.{js,ts}": [
       "prettier --write",
       "eslint --fix",
-      "npm-ensure -t deps",
       "git add"
     ]
-  },
-  "ensure": {
-    "deps": {
-      "checkDirs": [
-        "src/**/*"
-      ]
-    }
   },
   "dependencies": {
     "hoist-non-react-statics": "^3.3.2",
@@ -96,7 +88,6 @@
     "husky": "^4.3.0",
     "jest": "^26.6.3",
     "lint-staged": "^10.5.1",
-    "npm-ensure": "^1.2.0",
     "prettier": "^2.1.2",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
