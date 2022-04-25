@@ -67,7 +67,7 @@
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
-    "@eljs/release": "^0.3.1",
+    "@eljs/release": "^0.7.3",
     "@rollup/plugin-typescript": "^5.0.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
