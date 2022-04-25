@@ -184,7 +184,7 @@ export class Model<C extends ModelConfig> {
 
     // internal reducer setValue
     if (!reducers.setValue) {
-      reducers.setValue = (key, value): void => {
+      reducers.setValue = (key: string, value: any): void => {
         let newState
 
         if (isFunction(value)) {
@@ -204,7 +204,7 @@ export class Model<C extends ModelConfig> {
 
     // internal reducer setValues
     if (!reducers.setValues) {
-      reducers.setValues = (partialState): void => {
+      reducers.setValues = (partialState: any): void => {
         let newState
 
         if (isFunction(partialState)) {

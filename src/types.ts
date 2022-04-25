@@ -1,4 +1,6 @@
 import { Dispatch } from 'react'
+import { Draft } from 'immer'
+import { Nothing } from 'immer/dist/internal'
 
 type Push<L extends any[], T> = ((r: any, ...x: L) => void) extends (...x: infer L2) => void
   ? { [K in keyof L2]-?: K extends keyof L ? L[K] : T }
@@ -66,19 +68,29 @@ interface ModelEffectState {
   readonly loading: boolean
 }
 
+export type ValidRecipeReturnType<State> =
+  | State
+  | void
+  | undefined
+  | (State extends undefined ? Nothing : never)
+
+export interface Recipe<T> {
+  (draft: Draft<T>): ValidRecipeReturnType<Draft<T>>
+}
+
 interface BuildInReducerSetValue<S = any> {
-  <K extends keyof S>(key: K, value: (prevState: S[K]) => S[K]): void
+  <K extends keyof S>(key: K, recipe: Recipe<S[K]>): void
   <K extends keyof S>(key: K, value: S[K]): void
 }
 
 interface BuildInReducerSetValues<S = any> {
-  (state: (prevState: S) => S): void
-  (partialState: Partial<S>): void
+  (recipe: Recipe<S>): void
+  (prevState: Partial<S>): void
 }
 
 export interface BuildInReducers<S = any> {
-  setValue: <K extends keyof S>(key: K, value: S[K] | ((prevState: S[K]) => S[K])) => void
-  setValues: (state: Partial<S> | ((prevState: S) => S | undefined)) => void
+  setValue: BuildInReducerSetValue<S>
+  setValues: BuildInReducerSetValues<S>
   reset: <K extends keyof S>(key?: K) => void
 }
 
