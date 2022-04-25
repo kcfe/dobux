@@ -18,7 +18,10 @@ describe('getState test', () => {
     expect(store.getState()).toEqual({
       counter: {
         count: 0,
-        data: {},
+        data: {
+          a: 1,
+          b: '2',
+        },
       },
     })
 
@@ -30,7 +33,10 @@ describe('getState test', () => {
     expect(store.getState()).toEqual({
       counter: {
         count: 1,
-        data: {},
+        data: {
+          a: 1,
+          b: '2',
+        },
       },
     })
 
@@ -40,7 +46,10 @@ describe('getState test', () => {
     expect(store.getState()).toEqual({
       counter: {
         count: 0,
-        data: {},
+        data: {
+          a: 1,
+          b: '2',
+        },
       },
     })
   })
@@ -58,7 +67,10 @@ describe('getState test', () => {
 
     expect(store.getState('counter')).toEqual({
       count: 0,
-      data: {},
+      data: {
+        a: 1,
+        b: '2',
+      },
     })
 
     act(() => {
@@ -68,7 +80,10 @@ describe('getState test', () => {
 
     expect(store.getState('counter')).toEqual({
       count: 1,
-      data: {},
+      data: {
+        a: 1,
+        b: '2',
+      },
     })
 
     act(() => {
@@ -76,7 +91,10 @@ describe('getState test', () => {
     })
     expect(store.getState('counter')).toEqual({
       count: 0,
-      data: {},
+      data: {
+        a: 1,
+        b: '2',
+      },
     })
   })
 

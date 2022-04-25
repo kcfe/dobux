@@ -189,7 +189,7 @@ export class Model<C extends ModelConfig> {
 
         if (isFunction(value)) {
           newState = this.produceState(this.model.state, draft => {
-            draft[key] = value(this.model.state[key])
+            draft[key] = this.produceState(this.model.state[key], value)
           })
         } else {
           newState = this.produceState(this.model.state, draft => {

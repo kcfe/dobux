@@ -13,7 +13,10 @@ export const defaultStoreOptions = {
 export const config = {
   state: {
     count: 0,
-    data: {},
+    data: {
+      a: 1,
+      b: '2',
+    },
   },
   reducers: {
     increase(state: any) {

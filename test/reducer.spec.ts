@@ -89,6 +89,17 @@ describe('reducer test', () => {
     })
     expect(result.current.state.count).toBe(0)
 
+    act(() => {
+      setValue('data', draft => {
+        draft.a = 2
+        draft.b = '3'
+      })
+    })
+    expect(result.current.state.data).toEqual({
+      a: 2,
+      b: '3',
+    })
+
     expect(setValues.length).toBe(1)
     act(() => {
       setValues({
@@ -134,7 +145,10 @@ describe('reducer test', () => {
     })
 
     expect(result.current.state.count).toBe(0)
-    expect(result.current.state.data).toEqual({})
+    expect(result.current.state.data).toEqual({
+      a: 1,
+      b: '2',
+    })
   })
 
   it('should provider build-in reducers when no customize passed', () => {
@@ -198,7 +212,10 @@ describe('reducer test', () => {
     })
 
     expect(result.current.state.count).toBe(0)
-    expect(result.current.state.data).toEqual({})
+    expect(result.current.state.data).toEqual({
+      a: 1,
+      b: '2',
+    })
   })
 
   it('should overwrite build-in reducers when customize passed', () => {

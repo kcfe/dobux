@@ -79,8 +79,8 @@ export interface Recipe<T> {
 }
 
 interface BuildInReducerSetValue<S = any> {
-  <K extends keyof S>(key: K, recipe: Recipe<S[K]>): void
   <K extends keyof S>(key: K, value: S[K]): void
+  <K extends keyof S>(key: K, recipe: Recipe<S[K]>): void
 }
 
 interface BuildInReducerSetValues<S = any> {
