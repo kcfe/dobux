@@ -1,157 +1,123 @@
-import fs from 'fs'
 import path from 'path'
-import replace from 'rollup-plugin-replace'
-import { uglify } from 'rollup-plugin-uglify'
-import commonJs from 'rollup-plugin-commonjs'
-import typescript from 'rollup-plugin-typescript2'
-import resolve from 'rollup-plugin-node-resolve'
-// experimental minifier for ES modules
-// https://github.com/TrySound/rollup-plugin-uglify#warning
-import { minify } from 'uglify-es'
+import ts from 'rollup-plugin-typescript2'
+import json from '@rollup/plugin-json'
+import replace from '@rollup/plugin-replace'
+import nodeResolve from '@rollup/plugin-node-resolve'
+import commonjs from '@rollup/plugin-commonjs'
 
-import pkg from './package.json'
+const { resolveRoot } = require('./scripts/utils')
 
-const libraryName = 'dobux'
-const override = { compilerOptions: { declaration: false } }
+const pkgJSONPath = resolveRoot('package.json')
+const pkg = require(pkgJSONPath)
+const name = path.basename(__dirname)
 
-const globals = {
-  react: 'React',
-  'react-dom': 'ReactDOM',
+// ensure TS checks only once for each build
+let hasTSChecked = false
+
+const outputConfigs = {
+  cjs: {
+    file: resolveRoot(`dist/${name}.cjs.js`),
+    format: `cjs`,
+  },
+  esm: {
+    file: resolveRoot(`dist/${name}.esm.js`),
+    format: `es`,
+  },
 }
 
-const cjs = pkg.commonjs || `cjs/${libraryName}.js`
-const cjsMin = cjs.replace('.js', '.min.js')
-const esm = pkg.module || `esm/${libraryName}.js`
-const umd = pkg.browser || `umd/${libraryName}.js`
-const umdMin = umd.replace('.js', '.min.js')
+const defaultFormats = ['esm', 'cjs']
+const inlineFormats = process.env.FORMATS && process.env.FORMATS.split(',')
+const packageFormats = inlineFormats || defaultFormats
+const packageConfigs = process.env.PROD_ONLY
+  ? []
+  : packageFormats.map(format => createConfig(format, outputConfigs[format]))
 
-const productionPlugins = [
-  typescript({
-    tsconfigOverride: override,
-  }),
-  replace({
-    'process.env.NODE_ENV': JSON.stringify('production'),
-  }),
-  resolve(),
-  uglify(
-    {
-      compress: {
-        pure_getters: true,
-        unsafe: true,
-      },
-      output: {
-        comments: false,
-        semicolons: false,
-      },
-      mangle: {
-        reserved: ['payload', 'type', 'meta'],
-      },
-    },
-    minify
-  ),
-  commonJs(),
-]
+export default packageConfigs
 
-const developmentPlugins = [
-  typescript({
-    tsconfigOverride: override,
-  }),
-  replace({
-    'process.env.NODE_ENV': JSON.stringify('development'),
-  }),
-  resolve(),
-  commonJs(),
-]
-
-const cjsConfig = [
-  {
-    input: 'src/index.ts',
-    output: { file: cjs, format: 'cjs', exports: 'named', sourcemap: true },
-    external: Object.keys(globals),
-    plugins: developmentPlugins,
-  },
-  {
-    input: 'src/index.ts',
-    output: [
-      {
-        file: cjsMin,
-        format: 'cjs',
-        exports: 'named',
-        sourcemap: true,
-      },
-    ],
-    external: Object.keys(globals),
-    plugins: productionPlugins,
-  },
-]
-
-const esmConfig = [
-  {
-    input: 'src/index.ts',
-    output: { file: esm, format: 'es', exports: 'named', sourcemap: true },
-    external: Object.keys(globals),
-    plugins: developmentPlugins,
-  },
-]
-
-const umdConfig = [
-  {
-    input: 'src/index.ts',
-    output: {
-      name: 'Dobux',
-      file: umd,
-      format: 'umd',
-      exports: 'named',
-      sourcemap: true,
-      globals,
-    },
-    external: Object.keys(globals),
-    plugins: developmentPlugins,
-  },
-  {
-    input: 'src/index.ts',
-    output: {
-      name: 'Dobux',
-      file: umdMin,
-      format: 'umd',
-      exports: 'named',
-      sourcemap: true,
-      globals,
-    },
-    external: Object.keys(globals),
-    plugins: productionPlugins,
-  },
-]
-
-const root = `'use strict'
-
-if (process.env.NODE_ENV === 'production') {
-  module.exports = require('./${cjsMin}')
-} else {
-  module.exports = require('./${cjs}')
-}
-`
-
-export default (() => {
-  // generate root mapping files
-  fs.writeFileSync(path.join(__dirname, 'index.js'), root)
-
-  let config
-
-  switch (process.env.BUILD_ENV) {
-    case 'cjs':
-      config = cjsConfig[0]
-      break
-    case 'esm':
-      config = esmConfig[0]
-      break
-    case 'umd':
-      config = umdConfig[0]
-      break
-    default:
-      config = cjsConfig.concat(esmConfig).concat(umdConfig)
-      break
+function createConfig(format, output, plugins = []) {
+  if (!output) {
+    throw new Error(`Invalid format: "${format}"`)
   }
 
-  return config
-})()
+  const isProductionBuild = process.env.__DEV__ === 'false'
+  const isESMBuild = format === 'esm'
+  const isNodeBuild = format === 'cjs'
+
+  output.exports = 'named'
+  output.sourcemap = !!process.env.SOURCE_MAP
+  output.externalLiveBindings = false
+
+  const shouldEmitDeclarations = pkg.types && process.env.TYPES != null && !hasTSChecked
+
+  const tsPlugin = ts({
+    check: process.env.NODE_ENV === 'production' && !hasTSChecked,
+    tsconfig: resolveRoot('tsconfig.json'),
+    cacheRoot: resolveRoot('node_modules/.rts2_cache'),
+    tsconfigOverride: {
+      compilerOptions: {
+        sourceMap: output.sourcemap,
+        declaration: shouldEmitDeclarations,
+        declarationMap: shouldEmitDeclarations,
+      },
+      exclude: ['__tests__'],
+    },
+  })
+  // we only need to check TS and generate declarations once for each build.
+  // it also seems to run into weird issues when checking multiple times
+  // during a single build.
+  hasTSChecked = true
+
+  const entryFile = `src/index.ts`
+
+  return {
+    input: resolveRoot(entryFile),
+    external: [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})],
+    plugins: [
+      tsPlugin,
+      json({
+        namedExports: false,
+      }),
+      createReplacePlugin(isProductionBuild, isESMBuild, isNodeBuild),
+      nodeResolve(),
+      commonjs(),
+      ...plugins,
+    ],
+    output,
+    onwarn: (msg, warn) => {
+      if (!/Circular/.test(msg)) {
+        warn(msg)
+      }
+    },
+    treeshake: {
+      moduleSideEffects: false,
+    },
+    watch: {
+      exclude: ['node_modules/**', 'dist/**'],
+    },
+  }
+}
+
+function createReplacePlugin(isProduction, isESMBuild, isNodeBuild) {
+  const replacements = {
+    __VERSION__: `"${pkg.version}"`,
+    __DEV__: isESMBuild
+      ? // preserve to be handled by bundlers
+        `(process.env.NODE_ENV !== 'production')`
+      : // hard coded dev/prod builds
+        !isProduction,
+    __ESM__: isESMBuild,
+    __NODE_JS__: isNodeBuild,
+  }
+
+  // allow inline overrides like
+  Object.keys(replacements).forEach(key => {
+    if (key in process.env) {
+      replacements[key] = process.env[key]
+    }
+  })
+
+  return replace({
+    values: replacements,
+    preventAssignment: true,
+  })
+}

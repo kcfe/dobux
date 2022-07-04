@@ -73,18 +73,18 @@ describe('effect test', () => {
     expect(result.current.state.count).toBe(1)
   })
 
-  it('should only rerender when Component depend effect loading', (done) => {
+  it('should only rerender when Component depend effect loading', done => {
     const CounterRender = jest.fn()
     const Counter1Render = jest.fn()
 
     // https://spectrum.chat/testing-library/help/is-there-a-way-to-count-the-number-of-times-a-component-gets-rendered~8b8b3f8f-775d-49cc-80fd-baaf40fa37eb
-    const { getByTestId, queryByText } =  render(
+    const { getByTestId, queryByText } = render(
       <store.Provider>
         <Counter onRender={CounterRender} />
         <Counter1 onRender={Counter1Render} />
       </store.Provider>
     )
-    
+
     expect(CounterRender).toBeCalledTimes(1)
     expect(Counter1Render).toBeCalledTimes(1)
 

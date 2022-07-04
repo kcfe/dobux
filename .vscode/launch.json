@@ -6,9 +6,11 @@
       "request": "launch",
       "name": "Current File",
       "program": "${workspaceRoot}/node_modules/ts-node/dist/bin.js",
-      "args": ["--files", "${file}"],
+      "windows": {
+        "program": "${workspaceFolder}/node_modules/ts-node/bin/ts-node"
+      },
+      "args": ["-O", "{\"module\": \"commonjs\"}", "--files", "${file}"],
       "cwd": "${workspaceRoot}",
-      "protocol": "inspector",
       "console": "integratedTerminal"
     },
     {
@@ -16,13 +18,13 @@
       "request": "launch",
       "name": "Jest Current File",
       "program": "${workspaceFolder}/node_modules/.bin/jest",
-      "args": ["${fileBasenameNoExtension}", "--config", "jest.config.js"],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "disableOptimisticBPs": true,
       "windows": {
         "program": "${workspaceFolder}/node_modules/jest/bin/jest"
-      }
+      },
+      "runtimeExecutable": "sh",
+      "args": ["${fileBasenameNoExtension}", "--config", "jest.config.js"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
     }
   ]
 }

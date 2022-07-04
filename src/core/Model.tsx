@@ -187,7 +187,7 @@ export class Model<C extends ModelConfig> {
       reducers.setValue = (key: string, value: any): void => {
         let newState
 
-        if (isFunction(value)) {
+        if (typeof value === 'function') {
           newState = this.produceState(this.model.state, draft => {
             draft[key] = this.produceState(this.model.state[key], value)
           })
@@ -207,7 +207,7 @@ export class Model<C extends ModelConfig> {
       reducers.setValues = (partialState: any): void => {
         let newState
 
-        if (isFunction(partialState)) {
+        if (typeof partialState === 'function') {
           newState = this.produceState(this.model.state, partialState)
         } else {
           newState = this.produceState(this.model.state, draft => {

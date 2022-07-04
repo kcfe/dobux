@@ -110,7 +110,8 @@ describe('Provider test', () => {
     expect(wrapper2.getByTestId('show-models').innerHTML).toBe('what ever')
 
     const Component3 = withModel('counter')(Counter)
-    const wrapper3 = render(
+
+    render(
       <Provider>
         {/* @ts-ignore */}
         <Component3 state="1" reducers="2" effects="3" />
@@ -319,7 +320,7 @@ describe('Provider test', () => {
     unmount()
 
     const hook = createHook(Provider, useModel, 'counter')
- 
+
     expect(hook.result.current.state.count).toBe(0)
   })
 })

@@ -1,10 +1,11 @@
 import { Store } from './core/Store'
 import { defaultOptions } from './default'
-
-import { Models, Configs, ConfigReducers, ConfigEffects, Noop, StoreOptions } from './types'
 import { getStoreName } from './utils/func'
 
-export { Models }
+import { Configs, ConfigReducers, ConfigEffects, Noop, StoreOptions } from './types'
+
+export { Store }
+export * from './types'
 
 export function createStore<C extends Configs>(configs: C, options?: StoreOptions<C>): Store<C> {
   const opts = Object.assign(
@@ -19,7 +20,7 @@ export function createStore<C extends Configs>(configs: C, options?: StoreOption
 }
 
 export const createModel: <RM extends Record<string, unknown>, N extends keyof RM>() => <
-  S extends any,
+  S,
   R extends ConfigReducers<S>,
   E extends ConfigEffects<RM[N], RM>
 >(model: {
@@ -30,12 +31,14 @@ export const createModel: <RM extends Record<string, unknown>, N extends keyof R
   state: S
   reducers: R extends ConfigReducers<S> ? R : Record<string, unknown>
   effects: E extends ConfigEffects<RM[N], RM> ? E : Noop<Record<string, unknown>>
-} = () => (model): any => {
-  const { state, reducers = {}, effects = (): Record<string, unknown> => ({}) } = model
+} =
+  () =>
+  (model): any => {
+    const { state, reducers = {}, effects = (): Record<string, unknown> => ({}) } = model
 
-  return {
-    state,
-    reducers,
-    effects,
+    return {
+      state,
+      reducers,
+      effects,
+    }
   }
-}

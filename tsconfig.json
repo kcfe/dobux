@@ -1,21 +1,23 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["esnext", "dom"],
-    "jsx": "react",
-    "strict": true,
-    "noImplicitThis": false,
-    "sourceMap": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "declaration": true,
-    "typeRoots": ["node_modules/@types", "src/types"],
+    "baseUrl": "./",
+    "rootDir": "./",
+    "outDir": "dist",
+    "sourceMap": false,
+    "target": "es2016",
+    "useDefineForClassFields": false,
+    "module": "esnext",
     "moduleResolution": "node",
-    "outDir": "lib",
-    "module": "es2015"
+    "allowJs": false,
+    "strict": true,
+    "noUnusedLocals": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "removeComments": false,
+    "jsx": "react",
+    "lib": ["esnext", "dom"]
   },
-  "include": ["src", "test/setupTests.ts"],
-  "exclude": ["node_modules", "lib", "scripts", "test"]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }
