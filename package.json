@@ -11,8 +11,8 @@
   "scripts": {
     "dev": "node scripts/dev.js",
     "build": "node scripts/build.js",
-    "lint": "eslint 'src/**/*.@(js|ts)' --fix",
-    "format": "prettier --write 'src/**/*.@(js|ts)'",
+    "lint": "eslint 'src/**/*.@(js|ts|jsx|tsx)' --fix",
+    "format": "prettier --write 'src/**/*.@(js|ts|jsx|tsx)'",
     "test": "npm run test:once -- --watch",
     "test:once": "jest --runInBand --colors --forceExit",
     "coverage": "codecov",
@@ -32,10 +32,9 @@
     "immutable"
   ],
   "lint-staged": {
-    "{src,test}/**/*.{js,ts}": [
+    "{src,__tests__}/**/*.{js,jsx,ts,tsx}": [
       "prettier --write",
-      "eslint --fix",
-      "git add"
+      "eslint --fix"
     ]
   },
   "dependencies": {
