@@ -2,6 +2,8 @@ import { createStore, createModel } from '../src'
 import { Store } from '../src/core/Store'
 import { config, defaultStoreOptions } from './helper/shared'
 
+console.error = jest.fn()
+
 describe('entry test', () => {
   it('createStore should be defined', () => {
     expect(createStore).toBeDefined()

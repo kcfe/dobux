@@ -51,6 +51,7 @@ export class Model<C extends ModelConfig> {
 
   public Provider: React.FC
   private useContext: () => ModelContextProps
+  private clean: () => void
 
   constructor(private options: ModelOptions<C>) {
     const { storeName, name, config, rootModel } = options
@@ -71,6 +72,9 @@ export class Model<C extends ModelConfig> {
 
     this.Provider = Provider
     this.useContext = useContext
+    this.clean = () => {
+      this.model.state = this.initialState
+    }
   }
 
   public useModel(mapStateToModel: MapStateToModel<C['state']>): any {
@@ -132,12 +136,12 @@ export class Model<C extends ModelConfig> {
     )
 
     const state = mapStateToModel(model.state)
-    // model.state = state
 
     return {
       state,
       reducers: model.reducers,
       effects: model.effects,
+      clean: this.clean,
     }
   }
 

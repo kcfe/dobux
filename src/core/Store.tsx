@@ -26,6 +26,12 @@ export class Store<C extends Configs> {
   private rootModel = Object.create(null)
 
   constructor(private configs: C, options: Required<StoreOptions<C>>) {
+    if (options.autoReset) {
+      console.error(
+        `[dobux] \`autoReset\` is deprecated, please check https://kcfe.github.io/dobux/guide/faq.`
+      )
+    }
+
     this.models = this.initModels(configs, options)
 
     this.getState = this.getState.bind(this)

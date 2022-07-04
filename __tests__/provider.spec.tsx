@@ -13,6 +13,8 @@ import {
   CounterWithOtherContextName,
 } from './helper/MultiCountClassComponent'
 
+console.error = jest.fn()
+
 describe('Provider test', () => {
   it('should render correct when use provider in component', () => {
     const store = createStore({

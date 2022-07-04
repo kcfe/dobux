@@ -147,6 +147,7 @@ export type Models<C extends Configs, S = undefined, R = undefined, E = undefine
     state: Model<C[K], S, R, E>['state']
     reducers: Model<C[K], S, R, E>['reducers']
     effects: Model<C[K], S, R, E>['effects']
+    clean: () => void
   }
 }
 
