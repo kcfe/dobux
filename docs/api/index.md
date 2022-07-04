@@ -188,9 +188,11 @@ const counter = createModel<RootModel, 'counter'>()({
 
 - `options.name?: string`：指定 `store` 的名称，该名称会显示在 [redux devtools](/guide/devtools) 的面板上，非必传，默认为 `dobux/${number}`
 
+- `options.devtools?: boolean | Array<keyof models>`：在开发环境下模型是否支持连接 `redux devtools`，非必传，默认为 `true`，如果传入 `false` 表示当前 `store` 下的所有 `model` 都不支持连接 `devtools`，传入数组可以指定某些 `model` 不连接 `devtool`
+
 - `options.autoReset?: boolean | Array<keyof models>`：组件内部通过 `useModel` 消费数据源时，在组件卸载的时候是否需要自动重置为初始的数据，非必传，默认为 `false`，如果传入 `true` 表示当前 `store` 对应的多个 `model` 在组件卸载的时候都会自动卸载数据；如果传入数组可以指定某些 `model` 执行卸载操作
 
-- `options.devtools?: boolean | Array<keyof models>`：在开发环境下模型是否支持连接 `redux devtools`，非必传，默认为 `true`，如果传入 `false` 表示当前 `store` 下的所有 `model` 都不支持连接 `devtools`，传入数组可以指定某些 `model` 不连接 `devtool`
+> 注意：`autoReset` 配置项将已经弃用，将会在下一个大版本删除，请使用 ``
 
 #### 基本使用
 
@@ -220,52 +222,6 @@ const counter = createModel()({
 const store = createStore({
   counter,
 })
-```
-
-#### 自动重置
-
-```ts
-import { createModel, createStore } from 'dobux'
-
-const counter = createModel()({
-  state: {
-    count: 0,
-  },
-  reducers: {
-    increase(state, payload: number) {
-      state.count += 1
-    },
-    decrease(state, payload: number) {
-      state.count -= 1
-    },
-  },
-  effects: (model, rootModel) => ({
-    async increaseAsync(payload: number) {
-      await wait(1000)
-      model.reducers.increase()
-    },
-  }),
-})
-
-const store = createStore(
-  {
-    counter,
-  },
-  {
-    // 当前 Store 下的所有 Model 都会自动卸载
-    autoReset: true,
-  }
-)
-
-const store = createStore(
-  {
-    counter,
-  },
-  {
-    // 当前 Store 下的 `counter` Model 会自动卸载
-    autoReset: ['counter'],
-  }
-)
 ```
 
 #### Devtools
@@ -310,6 +266,52 @@ const store = createStore(
   {
     // 当前 Store 下的 `counter` Model 开启 Devtool 功能，其他 Model 关闭
     devtools: ['counter'],
+  }
+)
+```
+
+#### 自动重置
+
+```ts
+import { createModel, createStore } from 'dobux'
+
+const counter = createModel()({
+  state: {
+    count: 0,
+  },
+  reducers: {
+    increase(state, payload: number) {
+      state.count += 1
+    },
+    decrease(state, payload: number) {
+      state.count -= 1
+    },
+  },
+  effects: (model, rootModel) => ({
+    async increaseAsync(payload: number) {
+      await wait(1000)
+      model.reducers.increase()
+    },
+  }),
+})
+
+const store = createStore(
+  {
+    counter,
+  },
+  {
+    // 当前 Store 下的所有 Model 都会自动卸载
+    autoReset: true,
+  }
+)
+
+const store = createStore(
+  {
+    counter,
+  },
+  {
+    // 当前 Store 下的 `counter` Model 会自动卸载
+    autoReset: ['counter'],
   }
 )
 ```
@@ -409,7 +411,7 @@ const WithProviderForwardRefDemo = React.forwardRef((props, ref) => {
 export default withProviderForwardRef(WithProviderForwardRefDemo)
 ```
 
-### `store.useModel: (modelName: string, mapStateToModel?: (state: State) => any) => { state, reducers, effects }`
+### `store.useModel: (modelName: string, mapStateToModel?: (state: State) => any) => { state, reducers, effects, clean }`
 
 通过该 API 可以在函数组件内获取对应模型的实例，接受两个参数：
 
@@ -421,6 +423,7 @@ export default withProviderForwardRef(WithProviderForwardRefDemo)
 - `state`：当前消费模型对应的最新状态
 - `reducers`：当前组件可用于修改模型状态的方法
 - `effects`：当前组件可用于执行副作用的方法；其中 `effects.effectName.loading` 记录了异步操作时的状态，当执行 `effects.effectName` 时会将 `effects.effectName.loading` 设置为 `true`，当对应的副作用执行完成后会将 `effects.effectName.loading` 重置为 `false`。在视图中不再需要自己定义多个 `loading` 状态，通过该属性就简化视图层逻辑
+- `clean`：当前模型的清理函数，默认情况下模型对应的状态 `state` 会常驻于内存中，在组件卸载的时候不会清除，调用改方法会重置 `state` 为初始值
 
 #### 基本用法
 
@@ -435,6 +438,26 @@ const Counter: React.FC = () => {
   if (effects.increaseAsync.loading) {
     return <div>loading ...</div>
   }
+
+  return <div>Count: {state.count}</div>
+}
+```
+
+#### 重置状态
+
+默认情况下模型对应的状态 `state` 会常驻于内存中，在组件卸载的时候不会清除，如果需要重置 `state`，需要调用 `clean` 方法
+
+```tsx | pure
+import React, { useEffect } from 'react'
+import store from './store'
+
+const Counter: React.FC = () => {
+  const { state, reducers, effects, clean } = store.useModel('counter')
+
+  // 当组件卸载的时候重置状态
+  useEffect(() => {
+    return () => clean()
+  }, [])
 
   return <div>Count: {state.count}</div>
 }
@@ -481,6 +504,7 @@ const Counter: FC = () => {
 - `props[contextName].state`：当前消费的模型对应的最新状态
 - `props[contextName].reducers`：当前组件可用于修改模型状态的方法
 - `props[contextName].effects`：当前组件可用于执行模型副作用的方法
+- `props[contextName].clean`：当前模型的清理函数
 
 > 当使用的组件与已有 props 冲突时，则默认不引入 model 中对应的值。比如组件外层传递了 state 属性，那么 dobux 的 state 就不会传入
 
@@ -601,9 +625,10 @@ export default withModel('counter', state => {
 
 每个 model 的状态和方法都会在被包裹组件的 `props[contextName][modelName]` 上暴露：
 
-- `props[contextName].modelA.state`：当前消费的模型`modelA`对应的最新状态
-- `props[contextName].modelA.reducers`：当前组件可用于修改模型`modelA`状态的方法
-- `props[contextName].modelA.effects`：当前组件可用于执行模型`modelA`副作用的方法，其中 `effects.effectName.loading` 记录了异步操作时的状态，可以简化视图层逻辑
+- `props[contextName].modelA.state`：当前消费的模型 `modelA` 对应的最新状态
+- `props[contextName].modelA.reducers`：当前组件可用于修改模型 `modelA` 状态的方法
+- `props[contextName].modelA.effects`：当前组件可用于执行模型 `modelA` 副作用的方法，其中 `effects.effectName.loading` 记录了异步操作时的状态，可以简化视图层逻辑
+- `props[contextName].modelA.clean`：当前模型的清理方法
 
 #### 基本用法
 
@@ -801,5 +826,5 @@ const headerEffects = store.getEffects('header')
 // { addUndoItem }
 
 const undoListEffects = store.getEffects('undoList')
-// { fetchUndoList } 
+// { fetchUndoList }
 ```

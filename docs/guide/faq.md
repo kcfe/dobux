@@ -30,7 +30,7 @@ export const counter = createModel<RootModel, 'counter'>()({
     async decreaseAsync() {
       await wait(1000)
       return -1
-    }, 
+    },
   }),
 })
 ```
@@ -63,18 +63,18 @@ export const counter = createModel<RootModel, 'counter'>()({
     async decreaseAsync() {
       await wait(1000)
       return -1
-    }, 
+    },
   }),
 })
 ```
 
 ### 路由之间切换时 Model 的状态会一直保存，但是业务需要自动卸载？
 
-使用 `Dobux` 创建的 `store` 实例会常驻于浏览器的中内存，默认情况下当组件卸载是不会自动重置的，如果想要在组件卸载的时候重置数据可以通过 `createStore` 的第二个参数控制，[详见](/api#store--createstoremodels-options)
+使用 `Dobux` 创建的 `store` 实例会常驻于浏览器的内存中，默认情况下当组件卸载是不会自动重置的，如果想要在组件卸载的时候重置数据可以在组件卸载的时候执行 `useModel` 返回的 `clean` 方法手动重置，[详见](/api#store--createstoremodels-options)
 
 ### 多 Model 模式下，一个 Model 的改变会影响依赖其他 Model 的组件刷新，引起不必要的渲染吗？
 
-不会，一个 `Model` 的状态改变时，只有依赖了这个 `Model` 的组件会发生重新渲染，其他组件是无感知的。同时 `useModel` 同样提供了第二个参数 `mapStateToModel` 进行性能优化，你可以通过该函数的返回值精确的控制组件的渲染力度，[详见](/api#性能优化)
+不会，一个 `Model` 的状态改变时，只有依赖了这个 `Model` 的组件会发生重新渲染，其他组件是无感知的。同时 `useModel` 同样提供了第二个参数 `mapStateToModel` 进行性能优化，你可以通过该函数的返回值精确的控制组件的渲染力度，[详见](/api#重置状态)
 
 ### 通过 `useModel` 获取的 `state` 是在一个 Hooks 的闭包中，如何在 `useCallback` 等闭包中获取最新的值？
 
