@@ -1,14 +1,14 @@
-## [Changes](https://github.com/kcfe/dobux/compare/v1.4.3...v1.5.0) (2022-04-25)
+# [1.6.0-beta.0](https://github.com/kcfe/dobux/compare/v1.5.0...v1.6.0-beta.0) (2022-07-04)
 
 
-### ✨ Features
+### ♻ Code Refactoring
 
-* support setValue reducer use immer ([73d10a0](https://github.com/kcfe/dobux/commit/73d10a050e0101481a21718a392a491f61e0d53c))
+* auto reset ([32455bb](https://github.com/kcfe/dobux/commit/32455bb71753a97ee7e3a18e729699571c310a5d))
 
 
 ### 🐛 Bug Fixes
 
-* build in reducer ts type error ([692b110](https://github.com/kcfe/dobux/commit/692b1108942bd93adf234e031a1bb0a74ceff7d8))
+* type error ([ed64dc5](https://github.com/kcfe/dobux/commit/ed64dc53fb7cc51e76d8a67e5b682599c950d473))
 
 
 
