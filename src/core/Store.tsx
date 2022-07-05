@@ -43,7 +43,7 @@ export class Store<C extends Configs> {
     return <>{children}</>
   }
 
-  public withProvider = <P extends any>(Component: React.ComponentType<P>) => {
+  public withProvider = <P extends Record<string, any>>(Component: React.ComponentType<P>) => {
     const WithProvider: React.FC<P> = props => {
       return (
         <this.Provider>
@@ -97,7 +97,9 @@ export class Store<C extends Configs> {
 
     invariant(
       modelNames.indexOf(modelName as string) > -1,
-      `[store.useModel] Expected the modelName to be one of ${modelNames}, but got ${modelName}.`
+      `[store.useModel] Expected the modelName to be one of ${modelNames}, but got ${
+        modelName as string
+      }.`
     )
 
     invariant(
@@ -206,7 +208,9 @@ export class Store<C extends Configs> {
 
       invariant(
         modelNames.indexOf(modelName as string) > -1,
-        `[store.getState] Expected the modelName to be one of ${modelNames}, but got ${modelName}.`
+        `[store.getState] Expected the modelName to be one of ${modelNames}, but got ${
+          modelName as string
+        }.`
       )
 
       return this.rootModel[modelName].state
@@ -228,7 +232,9 @@ export class Store<C extends Configs> {
 
       invariant(
         modelNames.indexOf(modelName as string) > -1,
-        `[store.getReducers] Expected the modelName to be one of ${modelNames}, but got ${modelName}.`
+        `[store.getReducers] Expected the modelName to be one of ${modelNames}, but got ${
+          modelName as string
+        }.`
       )
 
       return this.rootModel[modelName].reducers
@@ -250,7 +256,9 @@ export class Store<C extends Configs> {
 
       invariant(
         modelNames.indexOf(modelName as string) > -1,
-        `[store.getEffects] Expected the modelName to be one of ${modelNames}, but got ${modelName}.`
+        `[store.getEffects] Expected the modelName to be one of ${modelNames}, but got ${
+          modelName as string
+        }.`
       )
 
       return this.rootModel[modelName].effects

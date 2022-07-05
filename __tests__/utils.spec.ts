@@ -119,7 +119,8 @@ describe('util test', () => {
 
     async function c() {}
 
-    expect(type.isFunction(c)).toBeTruthy()
+    expect(type.isFunction(c)).toBeFalsy()
+    expect(type.isAsyncFunc(c)).toBeTruthy()
     expect(type.isPromise(c())).toBeTruthy()
     expect(type.isObject({})).toBeTruthy()
     expect(type.isArray([])).toBeTruthy()

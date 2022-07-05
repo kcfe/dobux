@@ -1,4 +1,5 @@
 import { Noop } from './types'
+import '@testing-library/jest-dom'
 
 declare global {
   interface DevtoolExtension {

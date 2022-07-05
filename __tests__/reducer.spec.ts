@@ -90,7 +90,7 @@ describe('reducer test', () => {
     expect(result.current.state.count).toBe(0)
 
     act(() => {
-      setValue('data', draft => {
+      setValue('data', (draft: any) => {
         draft.a = 2
         draft.b = '3'
       })

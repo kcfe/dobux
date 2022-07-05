@@ -2,21 +2,23 @@ import { Dispatch } from 'react'
 import { Draft } from 'immer'
 import { Nothing } from 'immer/dist/internal'
 
-type Push<L extends any[], T> = ((r: any, ...x: L) => void) extends (...x: infer L2) => void
+export type Push<L extends any[], T> = ((r: any, ...x: L) => void) extends (...x: infer L2) => void
   ? { [K in keyof L2]-?: K extends keyof L ? L[K] : T }
   : never
 
 // convert a union to an intersection: X | Y | Z ==> X & Y & Z
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void
+export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I
+) => void
   ? I
   : never
 
 // convert a union to an overloaded function X | Y ==> ((x: X)=>void) & ((y:Y)=>void)
-type UnionToOvlds<U> = UnionToIntersection<U extends any ? (f: U) => void : never>
+export type UnionToOvlds<U> = UnionToIntersection<U extends any ? (f: U) => void : never>
 
 // convert a union to a tuple X | Y => [X, Y]
 // a union of too many elements will become an array instead
-type UnionToTuple<U> = UTT0<U> extends infer T
+export type UnionToTuple<U> = UTT0<U> extends infer T
   ? T extends any[]
     ? Exclude<U, T[number]> extends never
       ? T
@@ -26,13 +28,25 @@ type UnionToTuple<U> = UTT0<U> extends infer T
 
 // each type function below pulls the last element off the union and
 // pushes it onto the list it builds
-type UTT0<U> = UnionToOvlds<U> extends (a: infer A) => void ? Push<UTT1<Exclude<U, A>>, A> : []
-type UTT1<U> = UnionToOvlds<U> extends (a: infer A) => void ? Push<UTT2<Exclude<U, A>>, A> : []
-type UTT2<U> = UnionToOvlds<U> extends (a: infer A) => void ? Push<UTT3<Exclude<U, A>>, A> : []
-type UTT3<U> = UnionToOvlds<U> extends (a: infer A) => void ? Push<UTT4<Exclude<U, A>>, A> : []
-type UTT4<U> = UnionToOvlds<U> extends (a: infer A) => void ? Push<UTT5<Exclude<U, A>>, A> : []
-type UTT5<U> = UnionToOvlds<U> extends (a: infer A) => void ? Push<UTTX<Exclude<U, A>>, A> : []
-type UTTX<U> = []
+export type UTT0<U> = UnionToOvlds<U> extends (a: infer A) => void
+  ? Push<UTT1<Exclude<U, A>>, A>
+  : []
+export type UTT1<U> = UnionToOvlds<U> extends (a: infer A) => void
+  ? Push<UTT2<Exclude<U, A>>, A>
+  : []
+export type UTT2<U> = UnionToOvlds<U> extends (a: infer A) => void
+  ? Push<UTT3<Exclude<U, A>>, A>
+  : []
+export type UTT3<U> = UnionToOvlds<U> extends (a: infer A) => void
+  ? Push<UTT4<Exclude<U, A>>, A>
+  : []
+export type UTT4<U> = UnionToOvlds<U> extends (a: infer A) => void
+  ? Push<UTT5<Exclude<U, A>>, A>
+  : []
+export type UTT5<U> = UnionToOvlds<U> extends (a: infer A) => void
+  ? Push<UTTX<Exclude<U, A>>, A>
+  : []
+export type UTTX<U> = []
 
 export interface Noop<R = any> {
   (...args: any[]): R
@@ -64,7 +78,7 @@ export interface Configs {
   [key: string]: Config
 }
 
-interface ModelEffectState {
+export interface ModelEffectState {
   readonly loading: boolean
 }
 
@@ -78,12 +92,12 @@ export interface Recipe<T> {
   (draft: Draft<T>): ValidRecipeReturnType<Draft<T>>
 }
 
-interface BuildInReducerSetValue<S = any> {
+export interface BuildInReducerSetValue<S = any> {
   <K extends keyof S>(key: K, value: S[K]): void
   <K extends keyof S>(key: K, recipe: Recipe<S[K]>): void
 }
 
-interface BuildInReducerSetValues<S = any> {
+export interface BuildInReducerSetValues<S = any> {
   (recipe: Recipe<S>): void
   (prevState: Partial<S>): void
 }
@@ -94,14 +108,16 @@ export interface BuildInReducers<S = any> {
   reset: <K extends keyof S>(key?: K) => void
 }
 
-type ModelReducer<MR extends ConfigReducer> = MR extends (state: any, ...payload: infer P) => void
+export type ModelReducer<MR extends ConfigReducer> = MR extends (
+  state: any,
+  ...payload: infer P
+) => void
   ? (...payload: P) => void
   : any
 
 export type ModelReducers<R extends ConfigReducers, S = any> = {
   [K in keyof R]: ModelReducer<R[K]>
-} &
-  BuildInReducers<S>
+} & BuildInReducers<S>
 
 export type ModelEffect<E extends ConfigEffect> = (E extends (...payload: infer P) => infer R
   ? (...payload: P) => R

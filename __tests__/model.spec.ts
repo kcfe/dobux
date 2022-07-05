@@ -8,6 +8,6 @@ describe('Model test', () => {
 
   it('should have valid api', () => {
     expect(Object.keys(Model)).toEqual(['instances'])
-    expect(Object.keys(Model.prototype)).toContain('useModel')
+    expect(typeof Model.prototype.useModel).toBe('function')
   })
 })
