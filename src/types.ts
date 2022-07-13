@@ -186,6 +186,10 @@ export interface ContextPropsModel<C extends ModelConfig = any> {
 }
 
 export interface ModelProviderOptions {
+  /**
+   * @deprecated
+   * https://kcfe.github.io/dobux/api#store--createstoremodels-options
+   */
   autoReset?: boolean
   devtools?: boolean
 }
@@ -198,6 +202,10 @@ export type StoreProvider = React.FC<React.PropsWithChildren<any>>
 
 export interface StoreOptions<C extends Configs> {
   name?: string
+  /**
+   * @deprecated
+   * https://kcfe.github.io/dobux/api#store--createstoremodels-options
+   */
   autoReset?: boolean | UnionToTuple<keyof C>
   devtools?: boolean | UnionToTuple<keyof C>
 }

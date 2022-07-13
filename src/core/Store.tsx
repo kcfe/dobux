@@ -3,6 +3,7 @@ import hoistNonReactStatics from 'hoist-non-react-statics'
 import { Model } from './Model'
 import { isObject, isArray, isUndefined, isNull, isFunction } from '../utils/type'
 import { invariant } from '../utils/invariant'
+import { isDev } from '../common/env'
 
 import {
   Configs,
@@ -26,6 +27,12 @@ export class Store<C extends Configs> {
   private rootModel = Object.create(null)
 
   constructor(private configs: C, options: Required<StoreOptions<C>>) {
+    if (options.autoReset && isDev) {
+      console.error(
+        `[dobux] \`autoReset\` is deprecated, please check https://kcfe.github.io/dobux/api#store--createstoremodels-options`
+      )
+    }
+
     this.models = this.initModels(configs, options)
 
     this.getState = this.getState.bind(this)
