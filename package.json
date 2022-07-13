@@ -1,6 +1,6 @@
 {
   "name": "dobux",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Lightweight responsive state management solution",
   "main": "dist/dobux.cjs.js",
   "module": "dist/dobux.esm.js",
