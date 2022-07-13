@@ -188,7 +188,31 @@ const counter = createModel<RootModel, 'counter'>()({
 
 - `options.name?: string`：指定 `store` 的名称，该名称会显示在 [redux devtools](/guide/devtools) 的面板上，非必传，默认为 `dobux/${number}`
 
-- `options.autoReset?: boolean | Array<keyof models>`：组件内部通过 `useModel` 消费数据源时，在组件卸载的时候是否需要自动重置为初始的数据，非必传，默认为 `false`，如果传入 `true` 表示当前 `store` 对应的多个 `model` 在组件卸载的时候都会自动卸载数据；如果传入数组可以指定某些 `model` 执行卸载操作
+- <del>`options.autoReset?: boolean | Array<keyof models>`：组件内部通过 `useModel` 消费数据源时，在组件卸载的时候是否需要自动重置为初始的数据，非必传，默认为 `false`，如果传入 `true` 表示当前 `store` 对应的多个 `model` 在组件卸载的时候都会自动卸载数据；如果传入数组可以指定某些 `model` 执行卸载操作</del>
+- `options.autoReset` 配置项已经弃用，会在下一个大版本删除，如果需要重置模型状态，可以通过 `reducers.reset` 方法
+
+```tsx | pure
+import React, { FC, useEffect } from 'react'
+import store from './store'
+
+const Counter: FC = () => {
+  const {
+    state,
+    reducers: { reset },
+    effects,
+  } = store.useModel('counter')
+
+  useEffect(() => {
+    return () => reset()
+  }, [])
+
+  if (effects.increaseAsync.loading) {
+    return <div>loading ...</div>
+  }
+
+  return <div>Count: {state.count}</div>
+}
+```
 
 - `options.devtools?: boolean | Array<keyof models>`：在开发环境下模型是否支持连接 `redux devtools`，非必传，默认为 `true`，如果传入 `false` 表示当前 `store` 下的所有 `model` 都不支持连接 `devtools`，传入数组可以指定某些 `model` 不连接 `devtool`
 
@@ -257,15 +281,9 @@ const store = createStore(
   }
 )
 
-const store = createStore(
-  {
-    counter,
-  },
-  {
-    // 当前 Store 下的 `counter` Model 会自动卸载
-    autoReset: ['counter'],
-  }
-)
+const store = createStore({
+  counter,
+})
 ```
 
 #### Devtools
@@ -293,15 +311,9 @@ const counter = createModel()({
   }),
 })
 
-const store = createStore(
-  {
-    counter,
-  },
-  {
-    // 关闭当前 Store 下的所有 Model 的 Devtool 功能
-    devtools: false,
-  }
-)
+const store = createStore({
+  counter,
+})
 
 const store = createStore(
   {
@@ -801,5 +813,5 @@ const headerEffects = store.getEffects('header')
 // { addUndoItem }
 
 const undoListEffects = store.getEffects('undoList')
-// { fetchUndoList } 
+// { fetchUndoList }
 ```

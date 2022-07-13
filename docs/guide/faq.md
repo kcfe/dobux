@@ -30,7 +30,7 @@ export const counter = createModel<RootModel, 'counter'>()({
     async decreaseAsync() {
       await wait(1000)
       return -1
-    }, 
+    },
   }),
 })
 ```
@@ -63,14 +63,37 @@ export const counter = createModel<RootModel, 'counter'>()({
     async decreaseAsync() {
       await wait(1000)
       return -1
-    }, 
+    },
   }),
 })
 ```
 
 ### 路由之间切换时 Model 的状态会一直保存，但是业务需要自动卸载？
 
-使用 `Dobux` 创建的 `store` 实例会常驻于浏览器的中内存，默认情况下当组件卸载是不会自动重置的，如果想要在组件卸载的时候重置数据可以通过 `createStore` 的第二个参数控制，[详见](/api#store--createstoremodels-options)
+使用 `Dobux` 创建的 `store` 实例会常驻于浏览器的中内存，默认情况下当组件卸载是不会自动重置的，如果想要在组件卸载的时候重置数据可以根据实际需求在组件卸载的时候调用 `reducers.reset` 方法重置
+
+```tsx | pure
+import React, { FC, useEffect } from 'react'
+import store from './store'
+
+const Counter: FC = () => {
+  const {
+    state,
+    reducers: { reset },
+    effects,
+  } = store.useModel('counter')
+
+  useEffect(() => {
+    return () => reset()
+  }, [])
+
+  if (effects.increaseAsync.loading) {
+    return <div>loading ...</div>
+  }
+
+  return <div>Count: {state.count}</div>
+}
+```
 
 ### 多 Model 模式下，一个 Model 的改变会影响依赖其他 Model 的组件刷新，引起不必要的渲染吗？
 
